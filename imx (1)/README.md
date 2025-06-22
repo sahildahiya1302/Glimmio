@@ -89,6 +89,8 @@ Brands post campaigns via `/backend/campaigns.php`. Influencers view eligible ca
 - Environment variables loaded through `includes/env.php` keep secrets like API keys out of the codebase.
 
 The shared `css/instagram-theme.css` stylesheet gives the interface an Instagram-inspired design. Users can enable dark mode via `css/dark-theme.css` using the new toggle button in each header.
+Posting a new update now opens the camera and supports Post, Story or Reel types with an option to cross-post to Instagram.
+Explore defaults to fetching top creators from Instagram when no filters are applied.
 
 ## Development
 

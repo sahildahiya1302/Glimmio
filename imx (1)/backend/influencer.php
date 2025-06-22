@@ -152,6 +152,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && $action === 'profile' && $role === '
     $stmt->execute($params);
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
     respond(true, $rows);
+} elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && $action === 'instagram_posts' && $role === 'influencer') {
+    $tokenStmt = $pdo->prepare('SELECT access_token FROM instagram_tokens WHERE user_id=?');
+    $tokenStmt->execute([$_SESSION['user_id']]);
+    $token = $tokenStmt->fetchColumn();
+    if ($token) {
+        $media = instagram_get_recent_media($token, 12);
+        respond(true, $media);
+    }
+    respond(false, null, 'Token missing');
+} elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && $action === 'top_instagram' && $role === 'brand') {
+    $tokenStmt=$pdo->query('SELECT access_token FROM instagram_tokens LIMIT 1');
+    $token=$tokenStmt->fetchColumn();
+    if($token){
+        $list=instagram_search_top_creators($token,10);
+        respond(true,$list);
+    }
+    respond(false,null,'No data');
 } else {
     respond(false, null, 'Invalid request.');
 }

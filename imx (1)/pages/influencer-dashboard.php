@@ -15,7 +15,6 @@
         <div class="logo">Glimmio</div>
         <nav>
             <button id="theme-toggle">🌙</button>
-            <a href="feed.php" class="home-link"><i class="fas fa-home"></i></a>
             <a href="../pages/login.html" class="logout-link">Logout</a>
         </nav>
     </header>
@@ -30,8 +29,7 @@
                 <li><a href="#earnings" data-section="earnings"><i class="fas fa-wallet"></i> Earnings</a></li>
                 <li><a href="#notifications" data-section="notifications"><i class="fas fa-bell"></i> Notifications</a></li>
                 <li><a href="#analytics" data-section="analytics"><i class="fas fa-chart-bar"></i> Analytics</a></li>
-                <li><a href="#community" data-section="community"><i class="fas fa-users"></i> Community</a></li>
-                <li><a href="feed.php"><i class="fas fa-home"></i> Feed</a></li>
+                
             </ul>
         </div>
 
@@ -97,14 +95,6 @@
                 <canvas id="infChart"></canvas>
             </section>
 
-            <section id="community" style="display:none;">
-                <h3>Community Forum</h3>
-                <form id="community-form">
-                    <textarea id="community-content" placeholder="Share something" required style="width:100%;"></textarea>
-                    <button type="submit">Post</button>
-                </form>
-                <ul id="community-list"></ul>
-            </section>
         </div>
     </div>
 
@@ -151,39 +141,6 @@
             }
         }
 
-        async function loadCommunity(){
-            const res = await fetch('/backend/community.php?action=list');
-            const data = await res.json();
-            const ul = document.getElementById('community-list');
-            ul.innerHTML = '';
-            if(data.success){
-                data.data.forEach(p=>{
-                    const li=document.createElement('li');
-                    li.innerHTML = `<strong>${p.author}</strong>: ${p.content} <button class="like-btn" data-id="${p.id}">❤ ${p.like_count||0}</button>`;
-                    ul.appendChild(li);
-                });
-                document.querySelectorAll('.like-btn').forEach(btn=>{
-                    btn.onclick = async ()=>{
-                        const res = await fetch('/backend/community.php?action=like',{method:'POST',headers:{'X-CSRF-Token': csrfToken},headers:{'X-CSRF-Token': csrfToken},body:new URLSearchParams({post_id:btn.dataset.id})});
-                        const d = await res.json();
-                        if(d.success) loadCommunity();
-                    };
-                });
-            }
-        }
-
-        document.getElementById('community-form').addEventListener('submit', async e=>{
-            e.preventDefault();
-            const content = document.getElementById('community-content').value;
-            const fd = new FormData();
-            fd.append('content', content);
-            const res = await fetch('/backend/community.php?action=post',{method:'POST',headers:{'X-CSRF-Token': csrfToken},body:fd});
-            const d=await res.json();
-            if(d.success){
-                document.getElementById('community-content').value='';
-                loadCommunity();
-            }else alert(d.message);
-        });
 
         // Load campaigns
         async function loadCampaigns() {
@@ -388,7 +345,6 @@
             loadRequests();
             loadActiveCampaigns();
             loadAnalytics();
-            loadCommunity();
             loadEarnings();
             // apply saved theme
             if(localStorage.getItem('theme')==='dark'){

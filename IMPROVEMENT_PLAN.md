@@ -41,3 +41,5 @@ Following this plan will make the project easier to maintain and more secure.
 - Introduced `css/instagram-theme.css` which unifies fonts and colors across all pages for a sleek Instagram-like appearance.
 - Added `css/dark-theme.css` and a toggle button so users can switch between light and dark modes.
 - The feed page now includes a popup for viewing and adding comments without navigating away.
+- The dashboards now delegate feed and forum features to `dashboard.php` so there is a single posting experience.
+- Posting supports camera capture with optional Instagram cross‑posting.

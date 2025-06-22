@@ -46,6 +46,15 @@ async function loadPosts(uid){
     const res=await fetch('/backend/community.php?action=list&author='+uid+'&role='+role);
     const data=await res.json();
     posts=data.success?data.data:[];
+    if(role==='influencer'){
+        const ig=await fetch('/backend/influencer.php?action=instagram_posts');
+        const igData=await ig.json();
+        if(igData.data && igData.data.data){
+            igData.data.data.forEach(m=>{
+                posts.push({content:m.caption||'', image_url:m.media_url});
+            });
+        }
+    }
     renderPosts();
 }
 function renderPosts(){

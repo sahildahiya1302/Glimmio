@@ -1,0 +1,76 @@
+body {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background: linear-gradient(45deg,#f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.login-container {
+    background: #fff;
+    border-radius: 12px;
+    padding: 40px 30px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    width: 100%;
+    max-width: 360px;
+    text-align: center;
+}
+
+#login-title {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(45deg,#f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    width: 100%;
+    margin: 10px 0;
+    transition: opacity 0.3s;
+}
+
+button img {
+    height: 20px;
+    margin-right: 10px;
+}
+
+button:hover {
+    opacity: 0.8;
+}
+
+input[type="email"], input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+input:focus {
+    outline: none;
+    border-color: #4285F4;
+}
+
+@media (max-width: 768px) {
+    .login-container {
+        padding: 20px;
+    }
+
+    button {
+        font-size: 0.9rem;
+        padding: 8px 16px;
+    }
+}

@@ -1,0 +1,329 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #f3ec78, #af4261);
+    color: #2c3e50;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dashboard-container {
+    display: flex;
+    width: 90%;
+    height: 90vh;
+    background: #fff;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Sidebar */
+.sidebar {
+    width: 20%;
+    background: linear-gradient(45deg,#f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);
+    padding: 20px;
+    color: #fff;
+    position: relative;
+}
+
+.sidebar h2 {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.sidebar ul {
+    list-style: none;
+}
+
+.sidebar ul li {
+    margin: 20px 0;
+}
+
+.sidebar ul li a {
+    text-decoration: none;
+    color: #fff;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    border-radius: 10px;
+    transition: all 0.3s ease-in-out;
+}
+
+.sidebar ul li a:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+}
+
+.sidebar ul li a i {
+    margin-right: 10px;
+}
+
+/* Main Content */
+.main-content {
+    width: 80%;
+    padding: 30px;
+    overflow-y: auto;
+}
+
+.main-content section {
+    margin-bottom: 40px;
+    animation: fadeIn 0.6s ease-in-out;
+}
+
+.main-content section h3 {
+    font-size: 1.8rem;
+    color: #2c3e50;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #f3ec78;
+    padding-bottom: 5px;
+}
+
+/* Profile Section */
+#profile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    text-align: center;
+}
+
+#profile img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #af4261;
+}
+
+#profile p {
+    font-size: 1.2rem;
+    color: #34495e;
+}
+
+/* Campaigns Section */
+#campaigns {
+    text-align: center;
+}
+
+#campaigns select {
+    padding: 10px;
+    border: 2px solid #3498db;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    font-size: 1rem;
+    background: #ecf0f1;
+    color: #34495e;
+}
+
+#campaigns ul {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.campaign-card {
+    background: linear-gradient(135deg, #ecf0f1, #bdc3c7);
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    text-align: center;
+}
+
+.campaign-card img {
+    width: 100%;
+    height: 150px;
+    border-radius: 10px;
+    object-fit: cover;
+    margin-bottom: 15px;
+}
+
+.campaign-card h3 {
+    font-size: 1.5rem;
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+.campaign-card p {
+    color: #7f8c8d;
+    font-size: 1rem;
+    margin-bottom: 15px;
+}
+
+.raise-request-btn {
+    background: #2ecc71;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.3s ease-in-out;
+}
+
+.raise-request-btn:hover {
+    background: #27ae60;
+    transform: translateY(-3px);
+}
+
+/* Active Campaigns Section */
+.active-campaign-card {
+    background: linear-gradient(135deg, #f3ec78, #af4261);
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    color: #fff;
+    transition: transform 0.3s ease-in-out;
+}
+
+.active-campaign-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+.active-campaign-card p {
+    font-size: 1rem;
+    margin-bottom: 10px;
+}
+
+.active-campaign-card img {
+    width: 100%;
+    height: 150px;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+/* Notifications Section */
+.notification-card {
+    padding: 15px;
+    background: #f9f9f9;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    transition: all 0.3s ease-in-out;
+}
+
+.notification-card:hover {
+    background: #e0f7fa;
+    transform: scale(1.02);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+
+/* The overlay that darkens the screen */
+#reelUploadPopup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent black */
+    display: none; /* Initially hidden */
+    justify-content: center;
+    align-items: center;
+    z-index: 9999; /* Ensure it is on top */
+}
+
+/* The popup modal itself */
+#reelUploadPopup > div {
+    background-color: #fff;
+    padding: 20px;
+    width: 80%;
+    max-width: 400px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    position: relative;
+}
+
+/* Title of the popup */
+#reelUploadPopup h3 {
+    margin-top: 0;
+    color: #333;
+}
+
+/* File input for reel */
+#reelUploadPopup input[type="file"] {
+    display: block;
+    margin: 20px auto;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+}
+
+/* Submit button for submitting the request */
+#reelUploadPopup #submitRequestButton {
+    padding: 10px 20px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+/* Hover effect for the submit button */
+#reelUploadPopup #submitRequestButton:hover {
+    background-color: #0056b3;
+}
+
+/* Close button for closing the popup */
+#reelUploadPopup #closePopupButton {
+    padding: 10px 20px;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+/* Hover effect for the close button */
+#reelUploadPopup #closePopupButton:hover {
+    background-color: #d32f2f;
+}
+
+.close-popup-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    color: #333;
+    cursor: pointer;
+}
+
+.close-popup-btn:hover {
+    color: #ff0000;
+}
+.money{color:#28a745;font-weight:bold;margin-right:4px;}
+.metrics{margin-left:8px;color:#555;}

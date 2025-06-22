@@ -1,0 +1,94 @@
+<?php
+session_start();
+if(!isset($_SESSION['user_id'])){header('Location: login.html');exit;}
+$role=$_SESSION['role'];
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Dashboard</title>
+<link rel="stylesheet" href="/../css/brand-dashboard-style.css" />
+<link rel="stylesheet" href="/../css/influencer-dashboard-style.css" />
+<link rel="stylesheet" href="/../css/feed-style.css" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<div class="dashboard-container">
+    <div class="sidebar" style="display:flex; flex-direction: column; justify-content: flex-end; height: 100vh; width: 60px; background-color: #fff; border-right: 1px solid #ddd;">
+        <h2 style="display:none;">Dashboard</h2>
+        <ul style="list-style:none; padding:0; margin:0; display:flex; flex-direction: column; justify-content: flex-end; height: 100%;">
+            <li style="margin-bottom: 20px;"><a href="#feed" class="tablink" style="display:flex; justify-content:center; align-items:center; height: 60px; width: 60px; text-decoration:none; color:#333;">🏠</a></li>
+            <li style="margin-bottom: 20px;"><a href="#ads" class="tablink" style="display:flex; justify-content:center; align-items:center; height: 60px; width: 60px; text-decoration:none; color:#333;">📢</a></li>
+            <li style="margin-bottom: 20px;"><a href="dm.php" style="display:flex; justify-content:center; align-items:center; height: 60px; width: 60px; text-decoration:none; color:#333;">✉️</a></li>
+            <li><button id="add-post-btn" style="background:none; border:none; cursor:pointer; font-size: 30px; height: 60px; width: 60px;">➕</button></li>
+        </ul>
+    </div>
+    <div class="main-content" style="flex-grow:1; padding: 10px;">
+        <section id="feed"></section>
+        <section id="ads" style="display:none;"></section>
+    </div>
+</div>
+<script>
+const role='<?php echo $role;?>';
+async function loadFeed(){
+    const res=await fetch('feed.php');
+    const html=await res.text();
+    document.getElementById('feed').innerHTML=html;
+}
+async function loadAds(){
+    const wrap=document.getElementById('ads');
+    if(role==='brand'){
+        wrap.innerHTML='<iframe src="pages/brand-dashboard.php" style="width:100%;border:none;height:1000px;"></iframe>';
+    }else{
+        wrap.innerHTML='<iframe src="pages/influencer-dashboard.php" style="width:100%;border:none;height:1000px;"></iframe>';
+    }
+}
+
+document.querySelectorAll('.tablink').forEach(a=>{
+    a.onclick=e=>{
+        e.preventDefault();
+        document.querySelectorAll('section').forEach(s=>s.style.display='none');
+        document.querySelector(a.getAttribute('href')).style.display='block';
+        if(a.getAttribute('href')==='#feed') loadFeed();
+        if(a.getAttribute('href')==='#ads') loadAds();
+    };
+});
+
+document.getElementById('add-post-btn').onclick=()=>{
+    const mainContent=document.querySelector('.main-content');
+    mainContent.innerHTML=`
+        <h2>Add New Post</h2>
+        <form id="post-form" enctype="multipart/form-data">
+            <textarea id="post-content" placeholder="Share something" required style="width:100%; height:100px;"></textarea>
+            <input type="file" id="post-image" name="image" />
+            <button type="submit">Post</button>
+            <button type="button" id="cancel-post">Cancel</button>
+        </form>
+        <div id="post-message"></div>
+    `;
+    document.getElementById('cancel-post').onclick=()=>{
+        loadFeed();
+    };
+    document.getElementById('post-form').onsubmit=async e=>{
+        e.preventDefault();
+        const fd=new FormData();
+        fd.append('content',document.getElementById('post-content').value);
+        const img=document.getElementById('post-image').files[0];
+        if(img) fd.append('image',img);
+        const res=await fetch('/backend/community.php?action=post',{method:'POST',body:fd});
+        const data=await res.json();
+        if(data.success){
+            document.getElementById('post-message').textContent='Post added successfully!';
+            loadFeed();
+        }else{
+            document.getElementById('post-message').textContent='Failed to add post: '+data.message;
+        }
+    };
+};
+
+document.addEventListener('DOMContentLoaded',()=>{loadFeed();});
+</script>
+</body>
+</html>

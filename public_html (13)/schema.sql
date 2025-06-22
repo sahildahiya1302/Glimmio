@@ -238,3 +238,14 @@ CREATE TABLE IF NOT EXISTS community_posts (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_author (author_id, role)
 );
+-- Likes for community posts
+ALTER TABLE community_posts ADD COLUMN like_count INT DEFAULT 0;
+CREATE TABLE IF NOT EXISTS community_likes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    post_id INT NOT NULL,
+    user_id INT NOT NULL,
+    role ENUM('brand','influencer') NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uniq_like (post_id, user_id, role),
+    FOREIGN KEY (post_id) REFERENCES community_posts(id) ON DELETE CASCADE
+);

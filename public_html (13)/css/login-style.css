@@ -1,6 +1,6 @@
 body {
-    font-family: Arial, sans-serif;
-    background: #f4f4f4;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background: linear-gradient(45deg,#f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);
     margin: 0;
     padding: 0;
     display: flex;
@@ -11,11 +11,11 @@ body {
 
 .login-container {
     background: #fff;
-    border-radius: 10px;
-    padding: 30px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    padding: 40px 30px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
     width: 100%;
-    max-width: 400px;
+    max-width: 360px;
     text-align: center;
 }
 
@@ -29,7 +29,7 @@ button {
     display: flex;
     justify-content: center;
     align-items: center;
-    background: #4285F4;
+    background: linear-gradient(45deg,#f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);
     color: #fff;
     border: none;
     border-radius: 5px;
@@ -38,7 +38,7 @@ button {
     cursor: pointer;
     width: 100%;
     margin: 10px 0;
-    transition: background 0.3s;
+    transition: opacity 0.3s;
 }
 
 button img {
@@ -47,7 +47,7 @@ button img {
 }
 
 button:hover {
-    background: #357ae8;
+    opacity: 0.8;
 }
 
 input[type="email"], input[type="password"] {

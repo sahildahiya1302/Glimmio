@@ -1,0 +1,24 @@
+body {
+    margin:0;
+    font-family: 'Arial', sans-serif;
+    background: #fafafa;
+}
+.feed-container {
+    max-width:500px;
+    margin:40px auto;
+    background:#fff;
+    border:1px solid #dbdbdb;
+    border-radius:4px;
+    padding:20px;
+}
+#feed-list li{
+    border-bottom:1px solid #eee;
+    padding:10px 0;
+}
+.like-btn{
+    background:none;
+    border:none;
+    color:#e1306c;
+    cursor:pointer;
+    float:right;
+}

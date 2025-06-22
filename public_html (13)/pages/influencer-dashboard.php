@@ -20,6 +20,7 @@
                 <li><a href="#notifications" data-section="notifications"><i class="fas fa-bell"></i> Notifications</a></li>
                 <li><a href="#analytics" data-section="analytics"><i class="fas fa-chart-bar"></i> Analytics</a></li>
                 <li><a href="#community" data-section="community"><i class="fas fa-users"></i> Community</a></li>
+                <li><a href="feed.php"><i class="fas fa-home"></i> Feed</a></li>
             </ul>
         </div>
 
@@ -134,8 +135,15 @@
             if(data.success){
                 data.data.forEach(p=>{
                     const li=document.createElement('li');
-                    li.textContent = `${p.author}: ${p.content}`;
+                    li.innerHTML = `<strong>${p.author}</strong>: ${p.content} <button class="like-btn" data-id="${p.id}">❤ ${p.like_count||0}</button>`;
                     ul.appendChild(li);
+                });
+                document.querySelectorAll('.like-btn').forEach(btn=>{
+                    btn.onclick = async ()=>{
+                        const res = await fetch('/backend/community.php?action=like',{method:'POST',body:new URLSearchParams({post_id:btn.dataset.id})});
+                        const d = await res.json();
+                        if(d.success) loadCommunity();
+                    };
                 });
             }
         }

@@ -24,6 +24,7 @@
                 <li><a href="#submission-list">Content Submissions</a></li>
                 <li><a href="#analytics">Analytics</a></li>
                 <li><a href="#forum">Forum</a></li>
+                <li><a href="feed.php">Feed</a></li>
             </ul>
         </div>
 
@@ -395,7 +396,8 @@
             const ul=document.getElementById('forum-list');
             ul.innerHTML='';
             if(data.success){
-                data.data.forEach(p=>{const li=document.createElement('li');li.textContent=`${p.author}: ${p.content}`;ul.appendChild(li);});
+                data.data.forEach(p=>{const li=document.createElement('li');li.innerHTML=`<strong>${p.author}</strong>: ${p.content} <button class="like-btn" data-id="${p.id}">❤ ${p.like_count||0}</button>`;ul.appendChild(li);});
+                document.querySelectorAll('.like-btn').forEach(btn=>{btn.onclick=async()=>{const r=await fetch('/backend/community.php?action=like',{method:'POST',body:new URLSearchParams({post_id:btn.dataset.id})});const d=await r.json();if(d.success) loadForum();};});
             }
         }
 

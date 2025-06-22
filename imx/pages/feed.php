@@ -1,114 +1,93 @@
 <?php
 session_start();
-if(!isset($_SESSION['user_id'])){
-    header('Location: login.html');
-    exit;
-}
+if(!isset($_SESSION['user_id'])){ header('Location: login.html'); exit; }
+$role = $_SESSION['role'] ?? '';
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Community Feed</title>
+    <title>Feed</title>
     <link rel="stylesheet" href="/../css/feed-style.css" />
 </head>
 <body>
-    <div class="feed-container">
-        <h2>Feed</h2>
-        <ul id="feed-list"></ul>
+<div class="feed-view">
+    <div class="filter-bar">
+        <span class="chip active" data-filter="">All</span>
+        <span class="chip" data-filter="influencers">Influencers</span>
+        <span class="chip" data-filter="brands">Brands</span>
+        <span class="chip" data-filter="polls">Polls</span>
+        <span class="chip" data-filter="videos">Videos</span>
+        <span class="chip" data-filter="carousel">Carousel</span>
+        <span class="chip" data-filter="trending">Trending</span>
     </div>
-
+    <div id="feed-grid" class="feed-grid"></div>
+    <div id="end-message" class="end-message" style="display:none;">You're All Caught Up</div>
+</div>
 <script>
+const role = '<?php echo $role;?>';
+let posts = [];
 async function loadFeed(){
-    const res = await fetch('/backend/community.php?action=list');
+    const active = document.querySelector('.filter-bar .chip.active').dataset.filter;
+    let url = '/backend/community.php?action=list';
+    if(active === 'trending'){ url += '&filter=trending'; }
+    document.getElementById('feed-grid').innerHTML = '<div class="skeleton"></div>'.repeat(6);
+    const res = await fetch(url);
     const data = await res.json();
-    const ul = document.getElementById('feed-list');
-    ul.innerHTML='';
-    if(data.success){
-        data.data.forEach(p=>{
-            const li=document.createElement('li');
-            let contentWithTags = p.content.replace(/@(\w+)/g, '<a href="/profile.php?user=$1">@$1</a>');
-            let html=`
-                <div class="post-header">
-                    <div class="post-author">${p.author}</div>
-                </div>
-                <div class="post-content">${contentWithTags}</div>
-            `;
-            if(p.image_url) html+=`<img class="post-image" src="${p.image_url}" />`;
-            html+=`
-                <div class="post-buttons">
-                    <button class="like-btn" data-id="${p.id}">❤ ${p.like_count||0}</button>
-                    <button class="share-btn" data-id="${p.id}">🔗 ${p.share_count||0}</button>
-                    <button class="save-btn" data-id="${p.id}">💾 ${p.save_count||0}</button>
-                    <button class="comment-toggle" data-id="${p.id}">💬 ${p.comment_count||0}</button>
-                </div>
-                <ul class="comment-list" id="c${p.id}" style="display:none"></ul>
-            `;
-            li.innerHTML=html;
-            ul.appendChild(li);
-        });
-        document.querySelectorAll('.like-btn').forEach(btn=>{
-            btn.onclick=async()=>{
-                const r=await fetch('/backend/community.php?action=like',{method:'POST',body:new URLSearchParams({post_id:btn.dataset.id})});
-                const d=await r.json();
-                if(d.success) loadFeed();
-            };
-        });
-        document.querySelectorAll('.share-btn').forEach(btn=>{btn.onclick=async()=>{await fetch('/backend/community.php?action=share',{method:'POST',body:new URLSearchParams({post_id:btn.dataset.id})});loadFeed();};});
-        document.querySelectorAll('.save-btn').forEach(btn=>{btn.onclick=async()=>{await fetch('/backend/community.php?action=save',{method:'POST',body:new URLSearchParams({post_id:btn.dataset.id})});loadFeed();};});
-        document.querySelectorAll('.comment-toggle').forEach(btn=>{
-            btn.onclick=async()=>{
-                const cid='c'+btn.dataset.id;
-                const ulc=document.getElementById(cid);
-                if(ulc.style.display==='none'){
-                    const r=await fetch('/backend/community.php?action=list_comments&post_id='+btn.dataset.id);
-                    const d=await r.json();
-                    ulc.innerHTML='';
-                    if(d.success){
-                        d.data.forEach(c=>{
-                            const li=document.createElement('li');
-                            li.textContent=`${c.author}: ${c.comment}`;
-                            ulc.appendChild(li);
-                        });
-                        const inp=document.createElement('input');
-                        inp.placeholder='Comment';
-                        const send=document.createElement('button');
-                        send.textContent='Send';
-                        send.onclick=async()=>{
-                            await fetch('/backend/community.php?action=comment',{method:'POST',body:new URLSearchParams({post_id:btn.dataset.id,comment:inp.value})});
-                            loadFeed();
-                        };
-                        ulc.appendChild(inp);
-                        ulc.appendChild(send);
-                    }
-                    ulc.style.display='block';
-                }else{
-                    ulc.style.display='none';
-                }
-            };
-        });
-    }
+    posts = data.success ? data.data : [];
+    renderPosts();
 }
-
-document.addEventListener('DOMContentLoaded',loadFeed);
-
-// Add simple fade-in animation for posts
-const style = document.createElement('style');
-style.innerHTML = `
-    #feed-list li {
-        opacity: 0;
-        transform: translateY(20px);
-        animation: fadeInUp 0.5s forwards;
-    }
-    @keyframes fadeInUp {
-        to {
-            opacity: 1;
-            transform: translateY(0);
+function renderPosts(){
+    const grid = document.getElementById('feed-grid');
+    grid.innerHTML = '';
+    const active = document.querySelector('.filter-bar .chip.active').dataset.filter;
+    let filtered = posts.filter(p => {
+        if(active === 'influencers') return p.role === 'influencer';
+        if(active === 'brands') return p.role === 'brand';
+        if(active === 'polls') return p.poll_question;
+        if(active === 'videos') return p.image_url && p.image_url.match(/\.mp4$/);
+        if(active === 'carousel') return p.image_url && p.image_url.includes('|');
+        return true;
+    });
+    filtered.forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'feed-card';
+        const avatar = p.role === 'brand' ? '/uploads/default-brand.png' : '/uploads/default-user.png';
+        let media = '';
+        if(p.image_url){
+            const imgs = p.image_url.split('|');
+            if(imgs.length > 1){
+                media = '<div class="media carousel">' + imgs.map(i => `<img src="${i}">`).join('') + '</div>';
+            }else if(p.image_url.match(/\.mp4$/)){
+                media = `<div class="media"><video src="${p.image_url}" muted loop></video></div>`;
+            }else{
+                media = `<div class="media"><img src="${p.image_url}" /></div>`;
+            }
         }
-    }
-`;
-document.head.appendChild(style);
+        const poll = p.poll_question ? `<div class="poll"><p>${p.poll_question}</p>${(p.poll_results||[]).map((o,i)=>`<button class=\"poll-option\" data-id=\"${p.id}\" data-opt=\"${i}\">${o.option} (${o.votes})</button>`).join('')}</div>` : '';
+        const caption = `<div class="caption">${p.content.replace(/@(\\w+)/g,'<a href="/profile.php?user=$1">@$1</a>')}</div>`;
+        const reactions = `<div class="reactions"><button class="like-btn" data-id="${p.id}">❤ ${p.like_count||0}</button><button class="comment-toggle" data-id="${p.id}">💬 ${p.comment_count||0}</button><button class="share-btn" data-id="${p.id}">🔁</button><button class="save-btn" data-id="${p.id}">📌</button><span class="analytics-icon">📊<span class="analytics-tooltip">Impressions: ${p.like_count||0}</span></span></div>`;
+        const cta = `<div class="cta"><button class="cta-btn" data-id="${p.id}">${role==='brand'?'Invite to Campaign':'Apply to Similar Campaign'}</button></div>`;
+        card.innerHTML = `<div class="header"><img class="avatar" src="${avatar}" alt=""><span class="name">${p.author}</span><span class="role-tag">${p.role.toUpperCase()}</span><span class="dropdown">⋮</span></div>` + media + caption + poll + reactions + cta;
+        grid.appendChild(card);
+    });
+    document.getElementById('end-message').style.display = 'block';
+    attachHandlers();
+}
+function attachHandlers(){
+    document.querySelectorAll('.like-btn').forEach(btn => {
+        btn.onclick = async () => { await fetch('/backend/community.php?action=like',{method:'POST',body:new URLSearchParams({post_id:btn.dataset.id})}); loadFeed(); };
+    });
+    document.querySelectorAll('.share-btn').forEach(btn => { btn.onclick = async ()=>{ await fetch('/backend/community.php?action=share',{method:'POST',body:new URLSearchParams({post_id:btn.dataset.id})}); }; });
+    document.querySelectorAll('.save-btn').forEach(btn => { btn.onclick = async ()=>{ await fetch('/backend/community.php?action=save',{method:'POST',body:new URLSearchParams({post_id:btn.dataset.id})}); }; });
+    document.querySelectorAll('.poll-option').forEach(btn => { btn.onclick = async ()=>{ await fetch('/backend/community.php?action=vote',{method:'POST',body:new URLSearchParams({post_id:btn.dataset.id,option:btn.dataset.opt})}); loadFeed(); }; });
+    document.querySelectorAll('.cta-btn').forEach(btn => { btn.onclick = () => { alert('This action requires integration'); }; });
+}
+document.querySelectorAll('.filter-bar .chip').forEach(chip => {
+    chip.onclick = () => { document.querySelectorAll('.filter-bar .chip').forEach(c=>c.classList.remove('active')); chip.classList.add('active'); loadFeed(); };
+});
+document.addEventListener('DOMContentLoaded', loadFeed);
 </script>
 </body>
 </html>

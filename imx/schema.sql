@@ -78,6 +78,7 @@ CREATE TABLE IF NOT EXISTS requests (
     id INT AUTO_INCREMENT PRIMARY KEY,
     influencer_uid INT NOT NULL,
     campaign_id INT NOT NULL,
+    message TEXT,
     status ENUM('pending', 'accepted', 'rejected', 'live', 'completed') DEFAULT 'pending',
     reel_url VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

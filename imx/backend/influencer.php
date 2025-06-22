@@ -83,33 +83,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && $action === 'profile' && $role === '
     $requests = $stmt->fetchAll();
     respond(true, $requests);
 } elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'submit_request' && $role === 'influencer') {
-    // Submit a new request with reel upload
+    // Submit a new request with reel upload and message
     $user_id = $_SESSION['user_id'];
     $campaign_id = $_POST['campaign_id'] ?? '';
     if (!$campaign_id) {
         respond(false, null, 'Campaign ID is required.');
     }
 
-    // Handle reel upload
-    if (!isset($_FILES['reel']) || $_FILES['reel']['error'] !== UPLOAD_ERR_OK) {
-        respond(false, null, 'Reel file is required.');
-    }
+    $message = trim($_POST['message'] ?? '');
 
-    $upload_dir = __DIR__ . '/../uploads/reels/';
-    if (!is_dir($upload_dir)) {
-        mkdir($upload_dir, 0755, true);
+    // Handle reel upload (optional)
+    $reel_url = null;
+    if (isset($_FILES['reel']) && $_FILES['reel']['error'] === UPLOAD_ERR_OK) {
+        $upload_dir = __DIR__ . '/../uploads/reels/';
+        if (!is_dir($upload_dir)) {
+            mkdir($upload_dir, 0755, true);
+        }
+        $filename = uniqid() . '_' . basename($_FILES['reel']['name']);
+        $target_file = $upload_dir . $filename;
+        if (!move_uploaded_file($_FILES['reel']['tmp_name'], $target_file)) {
+            respond(false, null, 'Failed to upload reel.');
+        }
+        $reel_url = '/uploads/reels/' . $filename;
     }
-    $filename = uniqid() . '_' . basename($_FILES['reel']['name']);
-    $target_file = $upload_dir . $filename;
-    if (!move_uploaded_file($_FILES['reel']['tmp_name'], $target_file)) {
-        respond(false, null, 'Failed to upload reel.');
-    }
-    $reel_url = '/uploads/reels/' . $filename;
 
     // Insert request
-    $stmt = $pdo->prepare('INSERT INTO requests (influencer_uid, campaign_id, status, reel_url, created_at) VALUES (?, ?, ?, ?, NOW())');
+    $stmt = $pdo->prepare('INSERT INTO requests (influencer_uid, campaign_id, message, status, reel_url, created_at) VALUES (?, ?, ?, ?, ?, NOW())');
     try {
-        $stmt->execute([$user_id, $campaign_id, 'pending', $reel_url]);
+        $stmt->execute([$user_id, $campaign_id, $message, 'pending', $reel_url]);
         respond(true, null, 'Request submitted successfully.');
     } catch (Exception $ex) {
         error_log('Error submitting request: ' . $ex->getMessage());

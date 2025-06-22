@@ -46,6 +46,17 @@ if ($action === 'balance') {
     $pdo->prepare('UPDATE wallets SET balance = balance + ? WHERE id = ?')->execute([$amount, $walletId]);
     record_txn($pdo, $walletId, null, $amount, 'credit', 'Funds added');
     respond(true, null, 'Balance updated');
+} elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'payout' && $role === 'influencer') {
+    $amount = floatval($_POST['amount'] ?? 0);
+    $upi = trim($_POST['upi'] ?? '');
+    if ($amount <= 0 || !$upi) respond(false, null, 'Invalid payout');
+    $stmt = $pdo->prepare('SELECT balance FROM wallets WHERE id=?');
+    $stmt->execute([$walletId]);
+    $balance = $stmt->fetchColumn();
+    if ($balance < $amount) respond(false, null, 'Insufficient balance');
+    $pdo->prepare('UPDATE wallets SET balance = balance - ? WHERE id=?')->execute([$amount, $walletId]);
+    record_txn($pdo, $walletId, null, -$amount, 'payout', 'UPI payout to '.$upi);
+    respond(true, null, 'Payout requested');
 } else {
     respond(false, null, 'Invalid request');
 }

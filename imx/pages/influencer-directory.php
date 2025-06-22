@@ -10,8 +10,14 @@
     <div class="dashboard-container">
         <h2>Influencer Directory</h2>
         <div>
-            <label for="filter-cat">Filter Category:</label>
+            <label for="filter-cat">Category:</label>
             <input type="text" id="filter-cat" />
+            <label for="filter-ind">Industry:</label>
+            <input type="text" id="filter-ind" />
+            <label for="filter-budget">Budget/Reach &gt;=</label>
+            <input type="number" id="filter-budget" />
+            <label for="filter-loc">Location:</label>
+            <input type="text" id="filter-loc" />
             <button id="load-btn">Load</button>
         </div>
         <table id="inf-table">
@@ -39,7 +45,10 @@ async function loadInfluencers(){
     const tbody=document.querySelector('#inf-table tbody');
     tbody.innerHTML='';
     if(data.success){
-        data.data.forEach(i=>{
+        let rows=data.data;
+        const reachMin=parseInt(document.getElementById('filter-budget').value||0);
+        if(reachMin) rows=rows.filter(r=>(parseInt(r.reach||0)>=reachMin));
+        rows.forEach(i=>{
             const tr=document.createElement('tr');
             tr.innerHTML=`<td>${i.username||''}</td><td>${i.email}</td><td>${i.badge_level}</td><td>${i.category||''}</td><td>${i.followers_count||0}</td><td>${i.reach||0}</td><td>${i.engagement||0}</td>`;
             const td=document.createElement('td');

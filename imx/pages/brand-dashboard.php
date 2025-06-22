@@ -21,6 +21,7 @@
                 <li><a href="#campaign-list">View Campaigns</a></li>
                 <li><a href="influencer-directory.php">Browse Influencers</a></li>
                 <li><a href="#request-list">View Requests</a></li>
+                <li><a href="#wallet">Wallet</a></li>
                 <li><a href="#submission-list">Content Submissions</a></li>
                 <li><a href="#analytics">Analytics</a></li>
                 <li><a href="#forum">Forum</a></li>
@@ -92,6 +93,14 @@
             <section id="request-list">
                 <h3>Requests</h3>
                 <ul></ul>
+            </section>
+
+            <section id="wallet">
+                <h3>Wallet</h3>
+                <p id="brand-balance"></p>
+                <input type="number" id="add-funds-amt" placeholder="Amount" />
+                <button id="add-funds-btn">Add Funds</button>
+                <ul id="brand-tx"></ul>
             </section>
 
             <section id="submission-list" style="display:none;">
@@ -174,7 +183,6 @@
                         li.innerHTML = `
                             <div class="campaign-card">
                                 ${campaign.image_url ? `<img src="${campaign.image_url}" alt="Campaign Image" />` : ''}
-                                <span class="status-dot" style="background-color: ${campaign.status === 'active' ? 'green' : 'red'};"></span>
                                 <h3>${campaign.title}</h3>
                                 <p>${campaign.description}</p>
                                 <p>Category: ${campaign.category || ''}</p>
@@ -183,7 +191,7 @@
                                 <p>Budget: ${campaign.budget_total}</p>
                                 <p>Min Followers: ${campaign.min_followers}</p>
                                 <p>Badge Requirement: ${campaign.badge_min}</p>
-                                <p>Status: ${campaign.status}</p>
+                                <p>Status: <span class="status-dot ${campaign.status}"></span> ${campaign.status}</p>
                                 <button class="view-requests-button" data-id="${campaign.id}">View Accepted Requests</button>
                                 <div class="requests-container" id="requests-${campaign.id}" style="display: none;">
                                     <h4>Accepted Requests:</h4>
@@ -401,6 +409,25 @@
             }
         }
 
+        async function loadWallet(){
+            const r=await fetch('/backend/wallet.php?action=balance');
+            const d=await r.json();
+            if(d.success){document.getElementById('brand-balance').textContent=`Balance: $${d.data.balance}`;}
+            const t=await fetch('/backend/wallet.php?action=transactions');
+            const td=await t.json();
+            const list=document.getElementById('brand-tx');
+            list.innerHTML='';
+            if(td.success){td.data.forEach(tx=>{const li=document.createElement('li');li.textContent=`${tx.type}: $${tx.amount}`;list.appendChild(li);});}
+        }
+
+        document.getElementById('add-funds-btn').addEventListener('click',async()=>{
+            const amt=parseFloat(document.getElementById('add-funds-amt').value||0);
+            if(!amt){alert('Amount required');return;}
+            const fd=new FormData();fd.append('amount',amt);
+            const r=await fetch('/backend/wallet.php?action=add_funds',{method:'POST',body:fd});
+            const d=await r.json();alert(d.message);if(d.success) loadWallet();
+        });
+
         document.getElementById('forum-form').addEventListener('submit',async e=>{
             e.preventDefault();
             const content=document.getElementById('forum-content').value;
@@ -436,6 +463,7 @@
             loadCampaigns().then(loadAnalytics);
             loadSubmissions();
             loadForum();
+            loadWallet();
 
             const links = document.querySelectorAll('.sidebar ul li a');
             const sections = document.querySelectorAll('.main-content section');

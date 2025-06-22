@@ -1,6 +1,7 @@
 <?php
 require_once 'db.php';
 session_start();
+require_once __DIR__ . "/../includes/security.php";
 
 function respond($success, $data = null, $message = '') {
     header('Content-Type: application/json');
@@ -41,12 +42,14 @@ if ($action === 'balance') {
     $stmt->execute([$walletId]);
     respond(true, $stmt->fetchAll());
 } elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'add_funds' && $role === 'brand') {
+    require_csrf();
     $amount = floatval($_POST['amount'] ?? 0);
     if ($amount <= 0) respond(false, null, 'Invalid amount');
     $pdo->prepare('UPDATE wallets SET balance = balance + ? WHERE id = ?')->execute([$amount, $walletId]);
     record_txn($pdo, $walletId, null, $amount, 'credit', 'Funds added');
     respond(true, null, 'Balance updated');
 } elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'payout' && $role === 'influencer') {
+    require_csrf();
     $amount = floatval($_POST['amount'] ?? 0);
     $upi = trim($_POST['upi'] ?? '');
     if ($amount <= 0 || !$upi) respond(false, null, 'Invalid payout');

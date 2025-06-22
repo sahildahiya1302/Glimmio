@@ -1,6 +1,7 @@
 <?php
 require_once 'db.php';
 session_start();
+require_once __DIR__ . "/../includes/security.php";
 
 function respond($success, $data = null, $message = '') {
     header('Content-Type: application/json');
@@ -35,17 +36,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && $action === 'profile') {
         respond(false, null, 'Profile not found.');
     }
 } elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'update_profile') {
+    require_csrf();
     // Update brand profile
     $user_id = $_SESSION['user_id'];
-    $company_name = $_POST['company_name'] ?? '';
-    $website = $_POST['website'] ?? '';
-    $gstin = $_POST['gstin'] ?? '';
-    $industry = $_POST['industry'] ?? '';
-    $email = $_POST['email'] ?? '';
+    $company_name = sanitize_text('company_name');
+    $website = sanitize_text('website');
+    $gstin = sanitize_text('gstin');
+    $industry = sanitize_text('industry');
     // For logo upload, handle file upload if provided
+    $email = filter_var($_POST['email'] ?? '', FILTER_VALIDATE_EMAIL) ?: '';
+
     $logo_url = null;
 
-    if (isset($_FILES['logo']) && $_FILES['logo']['error'] === UPLOAD_ERR_OK) {
+    if (isset($_FILES['logo']) && validate_upload($_FILES['logo'], ['image/jpeg','image/png'])) {
         $upload_dir = __DIR__ . '/../uploads/brands/';
         if (!is_dir($upload_dir)) {
             mkdir($upload_dir, 0755, true);
@@ -57,6 +60,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && $action === 'profile') {
         } else {
             respond(false, null, 'Failed to upload logo.');
         }
+    } elseif (isset($_FILES['logo'])) {
+        respond(false, null, 'Invalid logo file.');
     }
 
     // Check if profile exists

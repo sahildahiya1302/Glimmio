@@ -1,6 +1,7 @@
 <?php
 require_once 'db.php';
 session_start();
+require_once __DIR__ . "/../includes/security.php";
 
 function respond($success, $data = null, $message = '') {
     header('Content-Type: application/json');
@@ -23,12 +24,13 @@ try {
 $action = $_GET['action'] ?? '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'submit') {
+    require_csrf();
     // influencer submits content for a campaign
     $campaign_id = $_POST['campaign_id'] ?? '';
     if (!$campaign_id) {
         respond(false, null, 'Campaign ID required');
     }
-    if (!isset($_FILES['media']) || $_FILES['media']['error'] !== UPLOAD_ERR_OK) {
+    if (!isset($_FILES['media']) || !validate_upload($_FILES['media'], ['image/jpeg','image/png','video/mp4','video/quicktime'])) {
         respond(false, null, 'Media file required');
     }
     $upload_dir = __DIR__ . '/../uploads/submissions/';
@@ -62,6 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'submit') {
     }
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
     respond(true, $rows);
+    require_csrf();
 } elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'update') {
     // brand updates status
     if ($_SESSION['role'] !== 'brand') {
@@ -83,6 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'submit') {
         respond(true, null, 'Status updated');
     } else {
         respond(false, null, 'Update failed');
+    require_csrf();
     }
 } elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'mark_live') {
     // influencer marks submission as posted on Instagram

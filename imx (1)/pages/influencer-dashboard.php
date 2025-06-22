@@ -5,10 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Influencer Dashboard</title>
     <link rel="stylesheet" href="/../css/influencer-dashboard-style.css" />
+    <link rel="stylesheet" href="/../css/instagram-theme.css" />
+    <link rel="stylesheet" href="/../css/dark-theme.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+    <header class="top-nav">
+        <div class="logo">Glimmio</div>
+        <nav>
+            <button id="theme-toggle">🌙</button>
+            <a href="feed.php" class="home-link"><i class="fas fa-home"></i></a>
+            <a href="../pages/login.html" class="logout-link">Logout</a>
+        </nav>
+    </header>
     <div class="dashboard-container">
         <div class="sidebar">
             <h2>Influencer Dashboard</h2>
@@ -109,6 +119,8 @@
 
     <script>
         let influencerUID = null;
+        let csrfToken = '';
+        fetch('/backend/auth.php?action=csrf').then(r=>r.json()).then(d=>{csrfToken=d.token;});
 
         // Load profile data
         async function loadProfile() {
@@ -152,7 +164,7 @@
                 });
                 document.querySelectorAll('.like-btn').forEach(btn=>{
                     btn.onclick = async ()=>{
-                        const res = await fetch('/backend/community.php?action=like',{method:'POST',body:new URLSearchParams({post_id:btn.dataset.id})});
+                        const res = await fetch('/backend/community.php?action=like',{method:'POST',headers:{'X-CSRF-Token': csrfToken},headers:{'X-CSRF-Token': csrfToken},body:new URLSearchParams({post_id:btn.dataset.id})});
                         const d = await res.json();
                         if(d.success) loadCommunity();
                     };
@@ -165,7 +177,7 @@
             const content = document.getElementById('community-content').value;
             const fd = new FormData();
             fd.append('content', content);
-            const res = await fetch('/backend/community.php?action=post',{method:'POST',body:fd});
+            const res = await fetch('/backend/community.php?action=post',{method:'POST',headers:{'X-CSRF-Token': csrfToken},body:fd});
             const d=await res.json();
             if(d.success){
                 document.getElementById('community-content').value='';
@@ -247,6 +259,7 @@
             try {
                 const response = await fetch('/backend/influencer.php?action=submit_request', {
                     method: 'POST',
+                    headers: {'X-CSRF-Token': csrfToken},
                     body: formData,
                 });
                 const result = await response.json();
@@ -343,7 +356,7 @@
             const upi=document.getElementById('upi').value;
             if(!amt||!upi){alert('UPI and amount required');return;}
             const fd=new FormData();fd.append('amount',amt);fd.append('upi',upi);
-            const r=await fetch('/backend/wallet.php?action=payout',{method:'POST',body:fd});
+            const r=await fetch('/backend/wallet.php?action=payout',{method:'POST',headers:{'X-CSRF-Token': csrfToken},body:fd});
             const d=await r.json();alert(d.message);if(d.success) loadEarnings();
         });
 
@@ -377,6 +390,15 @@
             loadAnalytics();
             loadCommunity();
             loadEarnings();
+            // apply saved theme
+            if(localStorage.getItem('theme')==='dark'){
+                document.body.classList.add('dark-mode');
+            }
+        });
+
+        document.getElementById('theme-toggle').addEventListener('click', () => {
+            const dark = document.body.classList.toggle('dark-mode');
+            localStorage.setItem('theme', dark ? 'dark' : 'light');
         });
     </script>
 </body>

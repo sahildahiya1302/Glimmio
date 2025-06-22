@@ -5,9 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <link rel="stylesheet" href="../css/login-style.css">
+    <link rel="stylesheet" href="../css/instagram-theme.css">
+    <link rel="stylesheet" href="../css/dark-theme.css">
 
 </head>
 <body>
+    <button id="theme-toggle" style="position:absolute;top:10px;right:10px;">🌙</button>
     <div id="auth-container" class="login-container">
         <div id="login-form-container">
             <h1 id="login-title">Login</h1>
@@ -232,6 +235,13 @@
                     '&scope=' + encodeURIComponent(scopes) +
                     '&response_type=code';
             }
+        });
+        if(localStorage.getItem('theme')==='dark'){
+            document.body.classList.add('dark-mode');
+        }
+        document.getElementById('theme-toggle').addEventListener('click',()=>{
+            const dark=document.body.classList.toggle('dark-mode');
+            localStorage.setItem('theme',dark?'dark':'light');
         });
     </script>
     <script src="/js/pixel.js"></script>

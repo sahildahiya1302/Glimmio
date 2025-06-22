@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'complete_profile') {
 
     try {
         if ($role === 'influencer') {
-            $stmt = $pdo->prepare('UPDATE influencers SET instagram_handle=?, category=?, bio=?, upi_id=? WHERE user_id=?');
+            $stmt = $pdo->prepare('UPDATE influencers SET instagram_handle=?, category=?, bio=?, upi_id=?, profile_complete=1 WHERE id=?');
             $stmt->execute([
                 $_POST['instagram_handle'] ?? '',
                 $_POST['category'] ?? '',
@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'complete_profile') {
                 $userId
             ]);
         } else {
-            $stmt = $pdo->prepare('UPDATE brands SET company_name=?, website=?, industry=? WHERE user_id=?');
+            $stmt = $pdo->prepare('UPDATE brands SET company_name=?, website=?, industry=?, profile_complete=1 WHERE id=?');
             $stmt->execute([
                 $_POST['company_name'] ?? '',
                 $_POST['website'] ?? '',
@@ -40,7 +40,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'complete_profile') {
                 $userId
             ]);
         }
-        $pdo->prepare('UPDATE users SET profile_complete=1 WHERE id=?')->execute([$userId]);
         $redirect = ($role === 'influencer') ? '../pages/influencer-dashboard.php' : '../pages/brand-dashboard.php';
         respond(true, null, 'Profile updated.', $redirect);
     } catch (Exception $e) {
@@ -51,11 +50,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'complete_profile') {
     $userId = $_SESSION['user_id'];
     $role = $_SESSION['role'];
     if ($role === 'influencer') {
-        $stmt = $pdo->prepare('SELECT * FROM influencers WHERE user_id=?');
+        $stmt = $pdo->prepare('SELECT * FROM influencers WHERE id=?');
         $stmt->execute([$userId]);
         $profile = $stmt->fetch();
     } else {
-        $stmt = $pdo->prepare('SELECT * FROM brands WHERE user_id=?');
+        $stmt = $pdo->prepare('SELECT * FROM brands WHERE id=?');
         $stmt->execute([$userId]);
         $profile = $stmt->fetch();
     }

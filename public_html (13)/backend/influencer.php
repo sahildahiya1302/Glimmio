@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && $action === 'profile') {
     try {
         // Fetch influencer profile
         $user_id = $_SESSION['user_id'];
-        $stmt = $pdo->prepare('SELECT id, email, username, profile_pic, followers_count, engagement_rate, media_count FROM influencers WHERE user_id = ?');
+        $stmt = $pdo->prepare('SELECT id, email, username, profile_pic FROM influencers WHERE id = ?');
         $stmt->execute([$user_id]);
         $profile = $stmt->fetch();
         if ($profile) {
@@ -44,11 +44,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && $action === 'profile') {
         // List active campaigns filtered by influencer metrics
         $user_id = $_SESSION['user_id'];
 
-        $stmt = $pdo->prepare('SELECT u.badge_level, i.followers_count, i.category, i.engagement_rate FROM users u JOIN influencers i ON u.id = i.user_id WHERE u.id = ?');
+        $stmt = $pdo->prepare('SELECT badge_level, category FROM influencers WHERE id = ?');
         $stmt->execute([$user_id]);
         $inf = $stmt->fetch();
         $badge = $inf['badge_level'] ?? 'bronze';
-        $followers = intval($inf['followers_count'] ?? 0);
+        $followers = 0;
         $category = $inf['category'] ?? '';
 
         $levels = ['bronze'=>1,'silver'=>2,'gold'=>3,'elite'=>4];

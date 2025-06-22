@@ -198,6 +198,10 @@
             alert(result.message);
             if (result.success) {
                 influencerModal.style.display = 'none';
+                // Redirect to Instagram OAuth to fetch profile
+                window.location.href = 'https://api.instagram.com/oauth/authorize?client_id=' +
+                    encodeURIComponent('YOUR_INSTAGRAM_CLIENT_ID') +
+                    '&redirect_uri=https://glimmio.com/instagram-callback.php&scope=user_profile&response_type=code';
             }
         });
     </script>

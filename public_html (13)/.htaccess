@@ -1,0 +1,7 @@
+# Protect environment and log files
+<Files ".env">
+    Require all denied
+</Files>
+<Directory "logs">
+    Require all denied
+</Directory>

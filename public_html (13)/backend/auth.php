@@ -1,10 +1,12 @@
 <?php
 require_once 'db.php';
+require_once __DIR__ . '/../includes/csrf.php';
+require_once __DIR__ . '/../includes/jwt_helper.php';
 session_start();
 
-function respond($success, $message, $redirect = null) {
+function respond($success, $message, $redirect = null, array $extra = []) {
     header('Content-Type: application/json');
-    $response = ['success' => $success, 'message' => $message];
+    $response = ['success' => $success, 'message' => $message] + $extra;
     if ($redirect) {
         $response['redirect'] = $redirect;
     }
@@ -13,7 +15,13 @@ function respond($success, $message, $redirect = null) {
 }
 
 try {
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if ($_SERVER['REQUEST_METHOD'] === 'GET' && ($_GET['action'] ?? '') === 'csrf') {
+        $token = generate_csrf_token();
+        header('Content-Type: application/json');
+        echo json_encode(['token' => $token]);
+        exit;
+    } elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $action = $_POST['action'] ?? '';
         $action = $_POST['action'] ?? '';
 
         // Load environment variables from .env
@@ -27,6 +35,10 @@ try {
         }
 
         $pdo = db_connect();
+
+        if (!verify_csrf_token($_POST['csrf_token'] ?? null)) {
+            respond(false, 'Invalid CSRF token.');
+        }
 
         if ($action === 'register') {
             $email = $_POST['email'] ?? '';
@@ -75,7 +87,12 @@ try {
             if ($user && password_verify($password, $user['password_hash'])) {
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['role'] = 'brand';
-                respond(true, 'Login successful.', 'brand-dashboard.php');
+                $token = create_jwt([
+                    'uid' => $user['id'],
+                    'role' => 'brand',
+                    'exp' => time() + 3600
+                ], $_ENV['JWT_SECRET'] ?? 'secret');
+                respond(true, 'Login successful.', 'brand-dashboard.php', ['token' => $token]);
             }
 
             // Then influencer
@@ -85,7 +102,12 @@ try {
             if ($user && password_verify($password, $user['password_hash'])) {
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['role'] = 'influencer';
-                respond(true, 'Login successful.', 'influencer-dashboard.php');
+                $token = create_jwt([
+                    'uid' => $user['id'],
+                    'role' => 'influencer',
+                    'exp' => time() + 3600
+                ], $_ENV['JWT_SECRET'] ?? 'secret');
+                respond(true, 'Login successful.', 'influencer-dashboard.php', ['token' => $token]);
             }
 
             respond(false, 'Invalid email or password.');

@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS campaigns (
     image_url VARCHAR(255),
     status ENUM('draft', 'active', 'completed', 'ended') DEFAULT 'draft',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (brand_id) REFERENCES users(id) ON DELETE CASCADE
+    FOREIGN KEY (brand_id) REFERENCES brands(id) ON DELETE CASCADE
 );
 
 -- Campaign briefs table holds creative references for campaigns
@@ -80,7 +80,7 @@ CREATE TABLE IF NOT EXISTS requests (
     reel_url VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     decision_at TIMESTAMP NULL,
-    FOREIGN KEY (influencer_uid) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (influencer_uid) REFERENCES influencers(id) ON DELETE CASCADE,
     FOREIGN KEY (campaign_id) REFERENCES campaigns(id) ON DELETE CASCADE
 );
 
@@ -90,7 +90,7 @@ CREATE TABLE IF NOT EXISTS notifications (
     user_id INT NOT NULL,
     message TEXT,
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES influencers(id) ON DELETE CASCADE
 );
 
 -- Content submissions table for workflow
@@ -107,7 +107,7 @@ CREATE TABLE IF NOT EXISTS content_submissions (
     posted_at DATETIME NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (campaign_id) REFERENCES campaigns(id) ON DELETE CASCADE,
-    FOREIGN KEY (influencer_id) REFERENCES users(id) ON DELETE CASCADE
+    FOREIGN KEY (influencer_id) REFERENCES influencers(id) ON DELETE CASCADE
 );
 
 -- Instagram tokens table stores OAuth tokens for API access
@@ -119,7 +119,7 @@ CREATE TABLE IF NOT EXISTS instagram_tokens (
     expires_at DATETIME NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE KEY uniq_user (user_id),
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES influencers(id) ON DELETE CASCADE
 );
 
 -- Metrics table for real-time Instagram stats
@@ -147,7 +147,7 @@ CREATE TABLE IF NOT EXISTS wallets (
     on_hold DECIMAL(10,2) DEFAULT 0,
     wallet_type ENUM('brand','influencer') NOT NULL,
     UNIQUE KEY uniq_wallet_user (user_id, wallet_type),
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES brands(id) ON DELETE CASCADE
 );
 
 -- Transactions ledger for wallets

@@ -46,15 +46,16 @@ try {
                 respond(false, 'Invalid role specified.');
             }
 
-            $stmt = $pdo->prepare('SELECT id FROM users WHERE email = ?');
+            $table = $role === 'brand' ? 'brands' : 'influencers';
+            $stmt = $pdo->prepare("SELECT id FROM {$table} WHERE email = ?");
             $stmt->execute([$email]);
             if ($stmt->fetch()) {
                 respond(false, 'Email is already registered.');
             }
 
             $password_hash = password_hash($password, PASSWORD_DEFAULT);
-            $stmt = $pdo->prepare('INSERT INTO users (email, password_hash, role) VALUES (?, ?, ?)');
-            if ($stmt->execute([$email, $password_hash, $role])) {
+            $stmt = $pdo->prepare("INSERT INTO {$table} (email, password_hash) VALUES (?, ?)");
+            if ($stmt->execute([$email, $password_hash])) {
                 respond(true, 'Registration successful. You can now log in.');
             } else {
                 respond(false, 'Registration failed. Please try again.');
@@ -67,19 +68,27 @@ try {
                 respond(false, 'Invalid email address.');
             }
 
-            $stmt = $pdo->prepare('SELECT id, password_hash, role FROM users WHERE email = ?');
+            // Check brand first
+            $stmt = $pdo->prepare('SELECT id, password_hash FROM brands WHERE email = ?');
             $stmt->execute([$email]);
             $user = $stmt->fetch();
-
             if ($user && password_verify($password, $user['password_hash'])) {
                 $_SESSION['user_id'] = $user['id'];
-                $_SESSION['role'] = $user['role'];
-
-                $redirect = ($user['role'] === 'influencer') ? 'influencer-dashboard.php' : 'brand-dashboard.php';
-                respond(true, 'Login successful.', $redirect);
-            } else {
-                respond(false, 'Invalid email or password.');
+                $_SESSION['role'] = 'brand';
+                respond(true, 'Login successful.', 'brand-dashboard.php');
             }
+
+            // Then influencer
+            $stmt = $pdo->prepare('SELECT id, password_hash FROM influencers WHERE email = ?');
+            $stmt->execute([$email]);
+            $user = $stmt->fetch();
+            if ($user && password_verify($password, $user['password_hash'])) {
+                $_SESSION['user_id'] = $user['id'];
+                $_SESSION['role'] = 'influencer';
+                respond(true, 'Login successful.', 'influencer-dashboard.php');
+            }
+
+            respond(false, 'Invalid email or password.');
         } else {
             respond(false, 'Invalid action.');
         }

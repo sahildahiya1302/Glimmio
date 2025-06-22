@@ -1,0 +1,9 @@
+2025-06-21T09:55:32+00:00 sent
+2025-06-21T10:23:12+00:00 failed: SMTP Error: Could not authenticate.
+2025-06-21T10:24:44+00:00 sent (PHPMailer)
+2025-06-21T10:28:46+00:00 failed: SMTP Error: Could not authenticate.
+2025-06-21T10:30:07+00:00 failed: SMTP Error: Could not authenticate.
+2025-06-21T10:31:09+00:00 sent (PHPMailer)
+2025-06-21T10:32:33+00:00 sent (PHPMailer)
+2025-06-21T10:38:14+00:00 sent (PHPMailer)
+2025-06-22T03:48:29+00:00 sent (PHPMailer)

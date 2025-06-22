@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'complete_profile') {
                 $userId
             ]);
         }
-        $redirect = ($role === 'influencer') ? '../pages/influencer-dashboard.php' : '../pages/brand-dashboard.php';
+        $redirect = '../pages/dashboard.php';
         respond(true, null, 'Profile updated.', $redirect);
     } catch (Exception $e) {
         error_log('Profile update error: '.$e->getMessage());

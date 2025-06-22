@@ -84,7 +84,7 @@ try {
             if ($user && password_verify($password, $user['password_hash'])) {
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['role'] = 'brand';
-                $redirect = $user['profile_complete'] ? '/pages/brand-dashboard.php' : '/pages/onboarding.php';
+                $redirect = $user['profile_complete'] ? '/pages/dashboard.php' : '/pages/onboarding.php';
                 respond(true, 'Login successful.', $redirect, ['role' => 'brand']);
             }
 
@@ -95,7 +95,7 @@ try {
             if ($user && password_verify($password, $user['password_hash'])) {
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['role'] = 'influencer';
-                $redirect = $user['profile_complete'] ? '/pages/influencer-dashboard.php' : '/pages/onboarding.php';
+                $redirect = $user['profile_complete'] ? '/pages/dashboard.php' : '/pages/onboarding.php';
                 respond(true, 'Login successful.', $redirect, ['role' => 'influencer']);
             }
 

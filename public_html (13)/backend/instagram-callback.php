@@ -36,7 +36,7 @@ if (isset($_GET['code'])) {
             error_log($e->getMessage());
         }
 
-        header('Location: /pages/influencer-dashboard.php?user_id=' . urlencode($data['user_id']));
+        header('Location: /pages/dashboard.php?user_id=' . urlencode($data['user_id']));
         exit;
     } else {
         echo 'Error fetching Instagram access token.';

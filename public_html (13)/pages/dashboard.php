@@ -56,11 +56,14 @@ async function loadCommunity(){
 }
 async function loadAds(){
     const wrap=document.getElementById('ads');
-    if(role==='brand'){
-        wrap.innerHTML='<iframe src="brand-dashboard.php" style="width:100%;border:none;height:1000px;"></iframe>';
-    }else{
-        wrap.innerHTML='<iframe src="influencer-dashboard.php" style="width:100%;border:none;height:1000px;"></iframe>';
-    }
+    const page=role==='brand'?'/pages/ads-brand.php':'/pages/ads-influencer.php';
+    const res=await fetch(page);
+    const html=await res.text();
+    // extract body if full page returned
+    const tmp=document.createElement('div');
+    tmp.innerHTML=html;
+    const body=tmp.querySelector('body');
+    wrap.innerHTML=body?body.innerHTML:html;
 }
 
 document.querySelectorAll('.tablink').forEach(a=>{a.onclick=e=>{e.preventDefault();document.querySelectorAll('section').forEach(s=>s.style.display='none');document.querySelector(a.getAttribute('href')).style.display='block';if(a.getAttribute('href')==='#feed') loadFeed();if(a.getAttribute('href')==='#community') loadCommunity();if(a.getAttribute('href')==='#ads') loadAds();};});

@@ -224,8 +224,7 @@
       end_date: formData.get('end_date'),
       goal_type: formData.get('goal_type'),
       target_metrics: 0, // Will calculate below
-      budget_total: parseFloat(formData.get('total_budget')),
-      commission_percent: 10 // default commission
+      budget_total: parseFloat(formData.get('total_budget'))
     };
 
     // Calculate target_metrics based on goal_type and budget
@@ -254,7 +253,7 @@
     .then(res => {
       if (res.success) {
         alert('Campaign created successfully! Campaign ID: ' + res.data.campaign_id);
-        window.location.href = 'brand-dashboard.php';
+        window.location.href = 'dashboard.php';
       } else {
         alert('Error: ' + res.message);
       }

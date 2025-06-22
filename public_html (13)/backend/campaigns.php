@@ -58,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'post_campaign') {
     $min_followers = intval($_POST['min_followers'] ?? 0);
     $badge_min = $_POST['badge_min'] ?? 'bronze';
     $max_influencers = $_POST['max_influencers'] !== '' ? intval($_POST['max_influencers']) : null;
-    $commission_percent = isset($_POST['commission_percent']) ? floatval($_POST['commission_percent']) : get_commission($pdo, $brand_id);
+    $commission_percent = get_commission($pdo, $brand_id);
 
     // Calculate influencer payout excluding commission
     $influencer_payout_total = $budget_total * (1 - $commission_percent / 100);

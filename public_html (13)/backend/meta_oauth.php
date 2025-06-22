@@ -98,8 +98,7 @@ try {
         // Log user in
         $_SESSION['user_id'] = $existing_user['id'];
         $_SESSION['role'] = $role;
-        $redirect = ($role === 'influencer') ? 'influencer-dashboard.php' : 'brand-dashboard.php';
-        respond(true, 'Login successful.', $redirect);
+        respond(true, 'Login successful.', 'dashboard.php');
     } else {
         // Register new user with meta_user_id
         // Check if email already exists
@@ -114,8 +113,7 @@ try {
             $account_id = $pdo->lastInsertId();
             $_SESSION['user_id'] = $account_id;
             $_SESSION['role'] = $role;
-            $redirect = ($role === 'influencer') ? 'influencer-dashboard.php' : 'brand-dashboard.php';
-            respond(true, 'Registration and login successful.', $redirect);
+            respond(true, 'Registration and login successful.', 'dashboard.php');
         } else {
             respond(false, 'Failed to register user.');
         }

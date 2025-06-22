@@ -17,6 +17,7 @@
                 <li><a href="#campaigns" data-section="campaigns"><i class="fas fa-bullhorn"></i> View Campaigns</a></li>
                 <li><a href="#requests" data-section="requests"><i class="fas fa-list-alt"></i> My Requests</a></li>
                 <li><a href="#active-campaigns" data-section="active-campaigns"><i class="fas fa-chart-line"></i> Active Campaigns</a></li>
+                <li><a href="#earnings" data-section="earnings"><i class="fas fa-wallet"></i> Earnings</a></li>
                 <li><a href="#notifications" data-section="notifications"><i class="fas fa-bell"></i> Notifications</a></li>
                 <li><a href="#analytics" data-section="analytics"><i class="fas fa-chart-bar"></i> Analytics</a></li>
                 <li><a href="#community" data-section="community"><i class="fas fa-users"></i> Community</a></li>
@@ -66,6 +67,15 @@
                 <ul id="active-campaign-list"></ul>
             </section>
 
+            <section id="earnings">
+                <h3>Earnings Dashboard</h3>
+                <p id="balance"></p>
+                <input type="text" id="upi" placeholder="UPI ID" />
+                <input type="number" id="payout-amount" placeholder="Amount" />
+                <button id="payout-btn">Withdraw</button>
+                <ul id="txn-list"></ul>
+            </section>
+
             <!-- Notifications Section -->
             <section id="notifications">
                 <h3>Notifications</h3>
@@ -90,7 +100,9 @@
 
     <div id="reelUploadPopup" class="popup" style="display:none;">
         <button id="closePopupButton" class="close-popup-btn">X</button>
-        <h3>Upload Your Reel</h3>
+        <h3>Apply to Campaign</h3>
+        <p id="metricInfo"></p>
+        <textarea id="applyMessage" placeholder="Message to brand" style="width:100%;margin-bottom:10px;"></textarea>
         <input type="file" id="reelInput" />
         <button id="submitRequestButton">Submit Request</button>
     </div>
@@ -203,6 +215,13 @@
             const popup = document.getElementById('reelUploadPopup');
             popup.style.display = 'block';
             popup.dataset.campaignId = campaignId;
+            document.getElementById('applyMessage').value = '';
+            document.getElementById('reelInput').value = '';
+            // show metrics in popup
+            const profile = {
+                followers: document.getElementById('followers-count').textContent.split(':')[1] || 0
+            };
+            document.getElementById('metricInfo').textContent = `Followers: ${profile.followers.trim()}`;
         }
 
         // Hide reel upload popup
@@ -218,15 +237,12 @@
             const campaignId = popup.dataset.campaignId;
             const reelInput = document.getElementById('reelInput');
             const reelFile = reelInput.files[0];
-
-            if (!reelFile) {
-                alert('Please select a reel file to upload.');
-                return;
-            }
+            const msg = document.getElementById('applyMessage').value;
 
             const formData = new FormData();
             formData.append('campaign_id', campaignId);
-            formData.append('reel', reelFile);
+            if(reelFile) formData.append('reel', reelFile);
+            formData.append('message', msg);
 
             try {
                 const response = await fetch('/backend/influencer.php?action=submit_request', {
@@ -307,6 +323,30 @@
             }
         }
 
+        async function loadEarnings(){
+            const r=await fetch('/backend/wallet.php?action=balance');
+            const d=await r.json();
+            if(d.success){
+                document.getElementById('balance').textContent=`Balance: $${d.data.balance}`;
+            }
+            const tr=await fetch('/backend/wallet.php?action=transactions');
+            const td=await tr.json();
+            const list=document.getElementById('txn-list');
+            list.innerHTML='';
+            if(td.success){
+                td.data.forEach(t=>{const li=document.createElement('li');li.textContent=`${t.type}: $${t.amount} (${t.description})`;list.appendChild(li);});
+            }
+        }
+
+        document.getElementById('payout-btn').addEventListener('click',async()=>{
+            const amt=parseFloat(document.getElementById('payout-amount').value||0);
+            const upi=document.getElementById('upi').value;
+            if(!amt||!upi){alert('UPI and amount required');return;}
+            const fd=new FormData();fd.append('amount',amt);fd.append('upi',upi);
+            const r=await fetch('/backend/wallet.php?action=payout',{method:'POST',body:fd});
+            const d=await r.json();alert(d.message);if(d.success) loadEarnings();
+        });
+
         // Navigation behavior
         const links = document.querySelectorAll('.sidebar ul li a');
         const sections = document.querySelectorAll('section');
@@ -336,6 +376,7 @@
             loadActiveCampaigns();
             loadAnalytics();
             loadCommunity();
+            loadEarnings();
         });
     </script>
 </body>

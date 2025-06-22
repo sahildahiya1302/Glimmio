@@ -85,8 +85,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && $action === 'list_requests') {
     if ($stmt->fetch()) {
         respond(false, null, 'Request already exists');
     }
-    $stmt = $pdo->prepare('INSERT INTO requests (influencer_uid, campaign_id, status, created_at) VALUES (?, ?, ?, NOW())');
-    if ($stmt->execute([$influencer_id, $campaign_id, 'pending'])) {
+    $stmt = $pdo->prepare('INSERT INTO requests (influencer_uid, campaign_id, message, status, created_at) VALUES (?, ?, ?, ?, NOW())');
+    if ($stmt->execute([$influencer_id, $campaign_id, null, 'pending'])) {
         respond(true, null, 'Invitation sent');
     } else {
         respond(false, null, 'Failed to send invitation');

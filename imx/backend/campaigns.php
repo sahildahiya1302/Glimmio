@@ -90,7 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'post_campaign') {
 
     // Insert campaign into database
     $stmt = $pdo->prepare('INSERT INTO campaigns (brand_id, title, objective, description, category, min_followers, badge_min, max_influencers, start_date, end_date, goal_type, rate, target_metrics, budget_total, commission_percent, influencer_payout_total, image_url, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())');
-    $status = 'active';
+    $status = 'published';
     try {
         $stmt->execute([
             $brand_id,
@@ -164,7 +164,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'post_campaign') {
         respond(false, null, 'Campaign ID missing');
     }
     $stmt = $pdo->prepare('UPDATE campaigns SET status = ? WHERE id = ? AND brand_id = ?');
-    if ($stmt->execute(['ended', $campaign_id, $_SESSION['user_id']])) {
+    if ($stmt->execute(['completed', $campaign_id, $_SESSION['user_id']])) {
         $w = $pdo->prepare('SELECT id, on_hold FROM wallets WHERE user_id = ? AND wallet_type = ?');
         $w->execute([$_SESSION['user_id'], 'brand']);
         $wallet = $w->fetch();

@@ -12,7 +12,33 @@ $pdo=db_connect();
 $action=$_GET['action'] ?? 'list';
 
 if($action==='list'){
-    $stmt=$pdo->query('SELECT cp.*, IF(cp.role="brand",b.company_name,i.username) AS author, cp.like_count, cp.share_count, cp.save_count, cp.comment_count FROM community_posts cp LEFT JOIN brands b ON cp.role="brand" AND cp.author_id=b.id LEFT JOIN influencers i ON cp.role="influencer" AND cp.author_id=i.id ORDER BY cp.created_at DESC LIMIT 50');
+    $filter=$_GET['filter'] ?? '';
+    $category=$_GET['category'] ?? '';
+    $author=intval($_GET['author'] ?? 0);
+    $authorRole=$_GET['role'] ?? '';
+    $sql='SELECT cp.*, IF(cp.role="brand",b.company_name,i.username) AS author, cp.like_count, cp.share_count, cp.save_count, cp.comment_count FROM community_posts cp LEFT JOIN brands b ON cp.role="brand" AND cp.author_id=b.id LEFT JOIN influencers i ON cp.role="influencer" AND cp.author_id=i.id';
+    $conds=[];
+    $params=[];
+    if($category){
+        $conds[]='(i.category=? OR b.industry=?)';
+        $params[]=$category;
+        $params[]=$category;
+    }
+    if($author){
+        $conds[]='cp.author_id=? AND cp.role=?';
+        $params[]=$author;
+        $params[]=$authorRole;
+    }
+    if($conds){
+        $sql.=' WHERE '.implode(' AND ',$conds);
+    }
+    if($filter==='trending'){
+        $sql.=' ORDER BY (cp.like_count+cp.comment_count+cp.share_count) DESC LIMIT 50';
+    }else{
+        $sql.=' ORDER BY cp.created_at DESC LIMIT 50';
+    }
+    $stmt=$pdo->prepare($sql);
+    $stmt->execute($params);
     $posts=$stmt->fetchAll(PDO::FETCH_ASSOC);
     foreach($posts as &$p){
         if($p['poll_options']){
@@ -33,11 +59,14 @@ if($action==='post' && $_SERVER['REQUEST_METHOD']==='POST'){
     $content=trim($_POST['content'] ?? '');
     if($content==='') respond(false,null,'Content required');
     $imgUrl=null;
-    if(!empty($_FILES['image']['tmp_name'])){
-        $path='/uploads/'.basename($_FILES['image']['name']);
-        if(move_uploaded_file($_FILES['image']['tmp_name'], __DIR__.'/..'.$path)){
-            $imgUrl=$path;
+    if(!empty($_FILES['images'])){
+        $paths=[];
+        foreach($_FILES['images']['tmp_name'] as $idx=>$tmp){
+            if(!$tmp) continue;
+            $p='/uploads/'.basename($_FILES['images']['name'][$idx]);
+            if(move_uploaded_file($tmp, __DIR__.'/..'.$p)) $paths[]=$p;
         }
+        if($paths) $imgUrl=implode('|',$paths);
     }
     $pollQ=trim($_POST['poll_question'] ?? '');
     $pollOpts=$_POST['poll_options'] ?? '';

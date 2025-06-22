@@ -6,6 +6,7 @@
     <title>Influencer Dashboard</title>
     <link rel="stylesheet" href="/../css/influencer-dashboard-style.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="dashboard-container">
@@ -17,6 +18,7 @@
                 <li><a href="#requests" data-section="requests"><i class="fas fa-list-alt"></i> My Requests</a></li>
                 <li><a href="#active-campaigns" data-section="active-campaigns"><i class="fas fa-chart-line"></i> Active Campaigns</a></li>
                 <li><a href="#notifications" data-section="notifications"><i class="fas fa-bell"></i> Notifications</a></li>
+                <li><a href="#analytics" data-section="analytics"><i class="fas fa-chart-bar"></i> Analytics</a></li>
             </ul>
         </div>
 
@@ -66,6 +68,11 @@
             <section id="notifications">
                 <h3>Notifications</h3>
                 <ul id="notification-list"></ul>
+            </section>
+
+            <section id="analytics" style="display:none;">
+                <h3>Performance Analytics</h3>
+                <canvas id="infChart"></canvas>
             </section>
         </div>
     </div>
@@ -186,7 +193,7 @@
         });
 
         // Load requests
-        async function loadRequests() {
+       async function loadRequests() {
             try {
                 const response = await fetch('/backend/influencer.php?action=list_requests');
                 const result = await response.json();
@@ -207,8 +214,24 @@
                 } else {
                     requestList.innerHTML = '<p>No requests found.</p>';
                 }
-            } catch (error) {
-                console.error('Error loading requests:', error);
+           } catch (error) {
+               console.error('Error loading requests:', error);
+           }
+       }
+
+        let chart;
+        async function loadAnalytics() {
+            const res = await fetch('/backend/metrics.php?action=overview');
+            const data = await res.json();
+            if (!data.success) return;
+            const m = data.data.metrics || {};
+            const ctx = document.getElementById('infChart').getContext('2d');
+            const vals = [m.reach||0, m.impressions||0, m.likes||0, m.comments||0, m.shares||0, m.saves||0];
+            if (!chart) {
+                chart = new Chart(ctx, {type:'bar',data:{labels:['Reach','Impressions','Likes','Comments','Shares','Saves'],datasets:[{label:'Metrics',backgroundColor:'#D0007D',data:vals}]}});
+            } else {
+                chart.data.datasets[0].data = vals;
+                chart.update();
             }
         }
 
@@ -238,6 +261,7 @@
             loadProfile();
             loadCampaigns();
             loadRequests();
+            loadAnalytics();
         });
     </script>
 </body>

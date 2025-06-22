@@ -8,10 +8,10 @@ function respond($success, $data = null, $message = '') {
     exit;
 }
 
-// Check if user is logged in and role is influencer
-if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'influencer') {
-    respond(false, null, 'Unauthorized. Please log in as an influencer.');
+if (!isset($_SESSION['user_id'])) {
+    respond(false, null, 'Unauthorized.');
 }
+$role = $_SESSION['role'] ?? '';
 
 $pdo = null;
 try {
@@ -23,7 +23,7 @@ try {
 
 $action = $_GET['action'] ?? '';
 
-if ($_SERVER['REQUEST_METHOD'] === 'GET' && $action === 'profile') {
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && $action === 'profile' && $role === 'influencer') {
     try {
         // Fetch influencer profile
         $user_id = $_SESSION['user_id'];
@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && $action === 'profile') {
         error_log('Error fetching profile for user_id ' . $user_id . ': ' . $ex->getMessage());
         respond(false, null, 'Error fetching profile.');
     }
-} elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && $action === 'list_campaigns') {
+} elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && $action === 'list_campaigns' && $role === 'influencer') {
     try {
         // List active campaigns filtered by influencer metrics
         $user_id = $_SESSION['user_id'];
@@ -74,14 +74,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && $action === 'profile') {
         error_log('Error fetching campaigns: ' . $ex->getMessage());
         respond(false, null, 'Error fetching campaigns.');
     }
-} elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && $action === 'list_requests') {
+} elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && $action === 'list_requests' && $role === 'influencer') {
     // List requests made by influencer
     $user_id = $_SESSION['user_id'];
     $stmt = $pdo->prepare('SELECT * FROM requests WHERE influencer_uid = ? ORDER BY created_at DESC');
     $stmt->execute([$user_id]);
     $requests = $stmt->fetchAll();
     respond(true, $requests);
-} elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'submit_request') {
+} elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'submit_request' && $role === 'influencer') {
     // Submit a new request with reel upload
     $user_id = $_SESSION['user_id'];
     $campaign_id = $_POST['campaign_id'] ?? '';
@@ -114,6 +114,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && $action === 'profile') {
         error_log('Error submitting request: ' . $ex->getMessage());
         respond(false, null, 'Failed to submit request.');
     }
+} elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && $action === 'list_all' && $role === 'brand') {
+    $category = $_GET['category'] ?? null;
+    $sql = 'SELECT i.id, i.username, i.email, i.badge_level, i.category, SUM(m.reach) as reach, SUM(m.engagement_total) as engagement FROM influencers i LEFT JOIN content_submissions cs ON cs.influencer_id = i.id LEFT JOIN metrics m ON m.submission_id = cs.id';
+    $params = [];
+    if ($category) {
+        $sql .= ' WHERE i.category = ?';
+        $params[] = $category;
+    }
+    $sql .= ' GROUP BY i.id ORDER BY i.created_at DESC';
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    respond(true, $rows);
 } else {
     respond(false, null, 'Invalid request.');
 }

@@ -66,6 +66,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && $action === 'list_requests') {
     } else {
         respond(false, null, 'Failed to update request status.');
     }
+} elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'invite') {
+    if (($_SESSION['role'] ?? '') !== 'brand') {
+        respond(false, null, 'Unauthorized');
+    }
+    $campaign_id = $_POST['campaign_id'] ?? '';
+    $influencer_id = $_POST['influencer_id'] ?? '';
+    if (!$campaign_id || !$influencer_id) {
+        respond(false, null, 'Missing parameters.');
+    }
+    $stmt = $pdo->prepare('SELECT id FROM campaigns WHERE id=? AND brand_id=?');
+    $stmt->execute([$campaign_id, $_SESSION['user_id']]);
+    if (!$stmt->fetch()) {
+        respond(false, null, 'Invalid campaign');
+    }
+    $stmt = $pdo->prepare('SELECT id FROM requests WHERE campaign_id=? AND influencer_uid=?');
+    $stmt->execute([$campaign_id, $influencer_id]);
+    if ($stmt->fetch()) {
+        respond(false, null, 'Request already exists');
+    }
+    $stmt = $pdo->prepare('INSERT INTO requests (influencer_uid, campaign_id, status, created_at) VALUES (?, ?, ?, NOW())');
+    if ($stmt->execute([$influencer_id, $campaign_id, 'pending'])) {
+        respond(true, null, 'Invitation sent');
+    } else {
+        respond(false, null, 'Failed to send invitation');
+    }
 } else {
     respond(false, null, 'Invalid request.');
 }

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Brand Dashboard</title>
     <link rel="stylesheet" href="/../css/brand-dashboard-style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="dashboard-container">
@@ -18,8 +19,10 @@
             <ul>
                 <li><a href="#post-campaign" class="active">Post Campaign</a></li>
                 <li><a href="#campaign-list">View Campaigns</a></li>
+                <li><a href="influencer-directory.php">Browse Influencers</a></li>
                 <li><a href="#request-list">View Requests</a></li>
                 <li><a href="#submission-list">Content Submissions</a></li>
+                <li><a href="#analytics">Analytics</a></li>
             </ul>
         </div>
 
@@ -93,6 +96,12 @@
                 <h3>Content Submissions</h3>
                 <ul></ul>
             </section>
+
+            <section id="analytics" style="display:none;">
+                <h3>Performance Analytics</h3>
+                <select id="analytics-campaign"></select>
+                <canvas id="brandChart"></canvas>
+            </section>
         </div>
     </div>
 
@@ -145,6 +154,10 @@
                 const campaignList = document.querySelector('#campaign-list ul');
                 campaignList.innerHTML = '';
                 if (result.success && result.data.length > 0) {
+                    const select = document.getElementById('analytics-campaign');
+                    if (select) {
+                        select.innerHTML = '<option value="">All Campaigns</option>';
+                    }
                     result.data.forEach((campaign) => {
                         const li = document.createElement('li');
                         li.innerHTML = `
@@ -169,7 +182,16 @@
                             </div>
                         `;
                         campaignList.appendChild(li);
+                        if (select) {
+                            const o=document.createElement('option');
+                            o.value=campaign.id;
+                            o.textContent=campaign.title;
+                            select.appendChild(o);
+                        }
                     });
+                    if (select) {
+                        select.addEventListener('change', loadAnalytics);
+                    }
 
                     // Attach event listeners to buttons
                     document.querySelectorAll('.view-requests-button').forEach(button => {
@@ -352,10 +374,30 @@
             }
         }
 
+        let chart;
+        async function loadAnalytics() {
+            const sel = document.getElementById('analytics-campaign');
+            const campaignId = sel.value || '';
+            let url = '/backend/metrics.php?action=overview';
+            if (campaignId) url += '&campaign_id=' + encodeURIComponent(campaignId);
+            const res = await fetch(url);
+            const data = await res.json();
+            if (!data.success) return;
+            const m = data.data.metrics || {};
+            const ctx = document.getElementById('brandChart').getContext('2d');
+            const vals = [m.reach||0, m.impressions||0, m.likes||0, m.comments||0, m.shares||0, m.saves||0];
+            if (!chart) {
+                chart = new Chart(ctx, {type:'bar',data:{labels:['Reach','Impressions','Likes','Comments','Shares','Saves'],datasets:[{label:'Metrics',backgroundColor:'#D0007D',data:vals}]}});
+            } else {
+                chart.data.datasets[0].data = vals;
+                chart.update();
+            }
+        }
+
         // Initial load
         document.addEventListener('DOMContentLoaded', () => {
             loadProfile();
-            loadCampaigns();
+            loadCampaigns().then(loadAnalytics);
             loadSubmissions();
 
             const links = document.querySelectorAll('.sidebar ul li a');

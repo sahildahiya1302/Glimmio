@@ -59,6 +59,61 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'complete_profile') {
         $profile = $stmt->fetch();
     }
     respond(true, $profile, 'ok');
+} elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && $action === 'overview') {
+    $campaignId = $_GET['campaign_id'] ?? null;
+    $userId = $_SESSION['user_id'];
+    $role = $_SESSION['role'];
+
+    try {
+        if ($role === 'influencer') {
+            $metricsSql = 'SELECT SUM(m.reach) as reach, SUM(m.impressions) as impressions, SUM(m.likes) as likes, SUM(m.comments) as comments, SUM(m.shares) as shares, SUM(m.saves) as saves, SUM(m.engagement_total) as engagement FROM metrics m JOIN content_submissions cs ON m.submission_id = cs.id WHERE cs.influencer_id = ?';
+            $params = [$userId];
+            if ($campaignId) {
+                $metricsSql .= ' AND cs.campaign_id = ?';
+                $params[] = $campaignId;
+            }
+            $stmt = $pdo->prepare($metricsSql);
+            $stmt->execute($params);
+            $metrics = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            $attrSql = 'SELECT event_type, SUM(value_count) as count, SUM(value_sum) as value FROM attribution_summary WHERE influencer_id = ?';
+            $params = [$userId];
+            if ($campaignId) {
+                $attrSql .= ' AND campaign_id = ?';
+                $params[] = $campaignId;
+            }
+            $attrSql .= ' GROUP BY event_type';
+            $aStmt = $pdo->prepare($attrSql);
+            $aStmt->execute($params);
+            $events = $aStmt->fetchAll(PDO::FETCH_ASSOC);
+            respond(true, ['metrics' => $metrics, 'events' => $events]);
+        } else {
+            $metricsSql = 'SELECT SUM(m.reach) as reach, SUM(m.impressions) as impressions, SUM(m.likes) as likes, SUM(m.comments) as comments, SUM(m.shares) as shares, SUM(m.saves) as saves, SUM(m.engagement_total) as engagement FROM metrics m JOIN content_submissions cs ON m.submission_id = cs.id JOIN campaigns c ON cs.campaign_id = c.id WHERE c.brand_id = ?';
+            $params = [$userId];
+            if ($campaignId) {
+                $metricsSql .= ' AND cs.campaign_id = ?';
+                $params[] = $campaignId;
+            }
+            $stmt = $pdo->prepare($metricsSql);
+            $stmt->execute($params);
+            $metrics = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            $attrSql = 'SELECT event_type, SUM(value_count) as count, SUM(value_sum) as value FROM attribution_summary WHERE campaign_id IN (SELECT id FROM campaigns WHERE brand_id = ?)';
+            $params = [$userId];
+            if ($campaignId) {
+                $attrSql = 'SELECT event_type, SUM(value_count) as count, SUM(value_sum) as value FROM attribution_summary WHERE campaign_id = ? AND campaign_id IN (SELECT id FROM campaigns WHERE brand_id = ?)';
+                $params = [$campaignId, $userId];
+            }
+            $attrSql .= ' GROUP BY event_type';
+            $aStmt = $pdo->prepare($attrSql);
+            $aStmt->execute($params);
+            $events = $aStmt->fetchAll(PDO::FETCH_ASSOC);
+            respond(true, ['metrics' => $metrics, 'events' => $events]);
+        }
+    } catch (Exception $e) {
+        error_log('Metrics overview error: ' . $e->getMessage());
+        respond(false, null, 'Failed to fetch metrics');
+    }
 } else {
     respond(false, 'Invalid request');
 }

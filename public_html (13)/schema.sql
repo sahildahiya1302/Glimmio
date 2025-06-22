@@ -235,6 +235,12 @@ CREATE TABLE IF NOT EXISTS community_posts (
     author_id INT NOT NULL,
     role ENUM('brand','influencer') NOT NULL,
     content TEXT NOT NULL,
+    image_url VARCHAR(255) DEFAULT NULL,
+    poll_question TEXT DEFAULT NULL,
+    poll_options TEXT DEFAULT NULL,
+    share_count INT DEFAULT 0,
+    save_count INT DEFAULT 0,
+    comment_count INT DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_author (author_id, role)
 );
@@ -248,4 +254,60 @@ CREATE TABLE IF NOT EXISTS community_likes (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE KEY uniq_like (post_id, user_id, role),
     FOREIGN KEY (post_id) REFERENCES community_posts(id) ON DELETE CASCADE
+);
+
+-- Comments on community posts
+CREATE TABLE IF NOT EXISTS community_comments (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    post_id INT NOT NULL,
+    user_id INT NOT NULL,
+    role ENUM('brand','influencer') NOT NULL,
+    comment TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (post_id) REFERENCES community_posts(id) ON DELETE CASCADE
+);
+
+-- Saved posts
+CREATE TABLE IF NOT EXISTS community_saves (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    post_id INT NOT NULL,
+    user_id INT NOT NULL,
+    role ENUM('brand','influencer') NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uniq_save (post_id, user_id, role),
+    FOREIGN KEY (post_id) REFERENCES community_posts(id) ON DELETE CASCADE
+);
+
+-- Shares count table
+CREATE TABLE IF NOT EXISTS community_shares (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    post_id INT NOT NULL,
+    user_id INT NOT NULL,
+    role ENUM('brand','influencer') NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (post_id) REFERENCES community_posts(id) ON DELETE CASCADE
+);
+
+-- Poll votes
+CREATE TABLE IF NOT EXISTS community_poll_votes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    post_id INT NOT NULL,
+    option_index INT NOT NULL,
+    user_id INT NOT NULL,
+    role ENUM('brand','influencer') NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uniq_vote (post_id, user_id, role),
+    FOREIGN KEY (post_id) REFERENCES community_posts(id) ON DELETE CASCADE
+);
+
+-- Direct messages between users
+CREATE TABLE IF NOT EXISTS direct_messages (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    sender_id INT NOT NULL,
+    sender_role ENUM('brand','influencer') NOT NULL,
+    receiver_id INT NOT NULL,
+    receiver_role ENUM('brand','influencer') NOT NULL,
+    message TEXT NOT NULL,
+    is_read BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

@@ -15,6 +15,8 @@ body {
     border-bottom:1px solid #eee;
     padding:10px 0;
 }
+.comment-list{list-style:none;padding-left:10px;}
+.comment-list li{padding:2px 0;}
 .like-btn{
     background:none;
     border:none;

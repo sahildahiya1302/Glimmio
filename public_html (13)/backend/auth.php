@@ -86,7 +86,7 @@ try {
                     'role' => 'brand',
                     'exp' => time() + 3600
                 ], env('JWT_SECRET', 'secret'));
-                respond(true, 'Login successful.', 'brand-dashboard.php', ['token' => $token]);
+                respond(true, 'Login successful.', 'dashboard.php', ['token' => $token]);
             }
 
             // Then influencer
@@ -101,7 +101,7 @@ try {
                     'role' => 'influencer',
                     'exp' => time() + 3600
                 ], env('JWT_SECRET', 'secret'));
-                respond(true, 'Login successful.', 'influencer-dashboard.php', ['token' => $token]);
+                respond(true, 'Login successful.', 'dashboard.php', ['token' => $token]);
             }
 
             respond(false, 'Invalid email or password.');

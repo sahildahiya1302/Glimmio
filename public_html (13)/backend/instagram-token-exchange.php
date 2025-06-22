@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/../includes/instagram_api.php';
 header('Content-Type: application/json');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -45,8 +46,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     try {
         $pdo = db_connect();
-        $stmt = $pdo->prepare('INSERT INTO instagram_tokens (user_id, access_token) VALUES (?, ?) ON DUPLICATE KEY UPDATE access_token = VALUES(access_token)');
-        $stmt->execute([$data['user_id'], $data['access_token']]);
+        $stmt = $pdo->prepare('INSERT INTO instagram_tokens (user_id, ig_user_id, access_token) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE ig_user_id=VALUES(ig_user_id), access_token = VALUES(access_token)');
+        $stmt->execute([$data['user_id'], $data['user_id'], $data['access_token']]);
+
+        $profile = instagram_get_profile($data['access_token']);
+        if ($profile) {
+            $up = $pdo->prepare('UPDATE influencers SET username=?, profile_pic=?, followers_count=?, media_count=? WHERE id=?');
+            $up->execute([
+                $profile['username'] ?? '',
+                $profile['profile_picture_url'] ?? '',
+                $profile['followers_count'] ?? 0,
+                $profile['media_count'] ?? 0,
+                $data['user_id']
+            ]);
+        }
     } catch (Exception $e) {
         error_log($e->getMessage());
         http_response_code(500);

@@ -28,6 +28,8 @@ CREATE TABLE IF NOT EXISTS influencers (
     profile_complete BOOLEAN DEFAULT FALSE,
     username VARCHAR(255),
     profile_pic VARCHAR(255),
+    followers_count INT DEFAULT 0,
+    media_count INT DEFAULT 0,
     instagram_handle VARCHAR(255),
     category VARCHAR(100),
     bio TEXT,

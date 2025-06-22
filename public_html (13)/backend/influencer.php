@@ -1,5 +1,6 @@
 <?php
 require_once 'db.php';
+require_once __DIR__ . '/../includes/instagram_api.php';
 session_start();
 
 function respond($success, $data = null, $message = '') {
@@ -114,9 +115,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && $action === 'profile' && $role === '
         error_log('Error submitting request: ' . $ex->getMessage());
         respond(false, null, 'Failed to submit request.');
     }
+} elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && $action === 'refresh_profile' && $role === 'influencer') {
+    $tokenStmt = $pdo->prepare('SELECT access_token FROM instagram_tokens WHERE user_id = ?');
+    $tokenStmt->execute([$_SESSION['user_id']]);
+    $token = $tokenStmt->fetchColumn();
+    if ($token) {
+        $profile = instagram_get_profile($token);
+        if ($profile) {
+            $up = $pdo->prepare('UPDATE influencers SET username=?, profile_pic=?, followers_count=?, media_count=? WHERE id=?');
+            $up->execute([
+                $profile['username'] ?? '',
+                $profile['profile_picture_url'] ?? '',
+                $profile['followers_count'] ?? 0,
+                $profile['media_count'] ?? 0,
+                $_SESSION['user_id']
+            ]);
+            respond(true, $profile, 'Profile updated');
+        }
+    }
+    respond(false, null, 'Unable to refresh profile');
 } elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && $action === 'list_all' && $role === 'brand') {
     $category = $_GET['category'] ?? null;
-    $sql = 'SELECT i.id, i.username, i.email, i.badge_level, i.category, SUM(m.reach) as reach, SUM(m.engagement_total) as engagement FROM influencers i LEFT JOIN content_submissions cs ON cs.influencer_id = i.id LEFT JOIN metrics m ON m.submission_id = cs.id';
+    $sql = 'SELECT i.id, i.username, i.email, i.badge_level, i.category, i.followers_count, SUM(m.reach) as reach, SUM(m.engagement_total) as engagement FROM influencers i LEFT JOIN content_submissions cs ON cs.influencer_id = i.id LEFT JOIN metrics m ON m.submission_id = cs.id';
     $params = [];
     if ($category) {
         $sql .= ' WHERE i.category = ?';

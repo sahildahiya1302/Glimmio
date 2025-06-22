@@ -16,7 +16,7 @@
         </div>
         <table id="inf-table">
             <thead>
-                <tr><th>Name</th><th>Email</th><th>Badge</th><th>Category</th><th>Reach</th><th>Engagement</th><th>Invite</th></tr>
+                <tr><th>Name</th><th>Email</th><th>Badge</th><th>Category</th><th>Followers</th><th>Reach</th><th>Engagement</th><th>Invite</th></tr>
             </thead>
             <tbody></tbody>
         </table>
@@ -41,7 +41,7 @@ async function loadInfluencers(){
     if(data.success){
         data.data.forEach(i=>{
             const tr=document.createElement('tr');
-            tr.innerHTML=`<td>${i.username||''}</td><td>${i.email}</td><td>${i.badge_level}</td><td>${i.category||''}</td><td>${i.reach||0}</td><td>${i.engagement||0}</td>`;
+            tr.innerHTML=`<td>${i.username||''}</td><td>${i.email}</td><td>${i.badge_level}</td><td>${i.category||''}</td><td>${i.followers_count||0}</td><td>${i.reach||0}</td><td>${i.engagement||0}</td>`;
             const td=document.createElement('td');
             const sel=document.createElement('select');
             campaigns.forEach(c=>{ const o=document.createElement('option'); o.value=c.id; o.textContent=c.title; sel.appendChild(o); });

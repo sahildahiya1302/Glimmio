@@ -108,6 +108,14 @@
             }
         }
 
+        async function refreshProfile() {
+            try {
+                await fetch('/backend/influencer.php?action=refresh_profile');
+            } catch (e) {
+                console.error('Refresh failed', e);
+            }
+        }
+
         // Load campaigns
         async function loadCampaigns() {
             try {
@@ -258,7 +266,7 @@
 
         // Initial load
         document.addEventListener('DOMContentLoaded', () => {
-            loadProfile();
+            refreshProfile().then(loadProfile);
             loadCampaigns();
             loadRequests();
             loadAnalytics();

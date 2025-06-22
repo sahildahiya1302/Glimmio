@@ -1,5 +1,6 @@
 <?php
 require_once 'db.php';
+require_once __DIR__ . '/../includes/instagram_api.php';
 session_start();
 
 function respond($success, $data = null, $message = '', $redirect = null) {
@@ -116,4 +117,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'complete_profile') {
     }
 } else {
     respond(false, 'Invalid request');
+}
+
+function fetch_metrics_graph($postId, $token) {
+    $url = 'https://graph.facebook.com/v18.0/' . urlencode($postId) . '?fields=impressions,reach,like_count,comments_count,media_type&access_token=' . urlencode($token);
+    $resp = @file_get_contents($url);
+    if ($resp === false) return null;
+    return json_decode($resp, true);
 }

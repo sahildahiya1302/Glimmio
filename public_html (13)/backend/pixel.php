@@ -15,8 +15,11 @@ $utm = [
 $ip = $_SERVER['REMOTE_ADDR'] ?? '';
 $agent = $_SERVER['HTTP_USER_AGENT'] ?? '';
 
-$stmt = $pdo->prepare('INSERT INTO pixel_events (event_type, utm_source, utm_medium, utm_campaign, utm_content, utm_term, ip_address, user_agent) VALUES (?,?,?,?,?,?,?,?)');
-$stmt->execute(array_merge([$event], $utm, [$ip, $agent]));
+$url = $input['url'] ?? null;
+$ref = $input['referrer'] ?? null;
+$sid = $input['session'] ?? null;
+$stmt = $pdo->prepare('INSERT INTO pixel_events (event_type, utm_source, utm_medium, utm_campaign, utm_content, utm_term, ip_address, user_agent, page_url, referrer, session_id) VALUES (?,?,?,?,?,?,?,?,?,?,?)');
+$stmt->execute(array_merge([$event], $utm, [$ip, $agent, $url, $ref, $sid]));
 
 // Transparent 1x1 GIF
 echo base64_decode('R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==');

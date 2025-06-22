@@ -23,6 +23,7 @@
                 <li><a href="#request-list">View Requests</a></li>
                 <li><a href="#submission-list">Content Submissions</a></li>
                 <li><a href="#analytics">Analytics</a></li>
+                <li><a href="#forum">Forum</a></li>
             </ul>
         </div>
 
@@ -101,6 +102,15 @@
                 <h3>Performance Analytics</h3>
                 <select id="analytics-campaign"></select>
                 <canvas id="brandChart"></canvas>
+            </section>
+
+            <section id="forum" style="display:none;">
+                <h3>Brand Forum</h3>
+                <form id="forum-form">
+                    <textarea id="forum-content" placeholder="Share updates" required style="width:100%;"></textarea>
+                    <button type="submit">Post</button>
+                </form>
+                <ul id="forum-list"></ul>
             </section>
         </div>
     </div>
@@ -336,6 +346,7 @@
                                 <p>Campaign ID: ${sub.campaign_id}</p>
                                 <p>Status: ${sub.status}</p>
                                 ${sub.media_url ? `<a href="${sub.media_url}" target="_blank">View Media</a>` : ''}
+                                <span class="metrics" id="bm${sub.id}"></span>
                                 ${sub.status === 'pending' || sub.status === 'needs_revision' ? `
                                     <button class="approve-sub" data-id="${sub.id}">Approve</button>
                                     <button class="reject-sub" data-id="${sub.id}">Reject</button>
@@ -343,6 +354,10 @@
                             </div>
                         `;
                         list.appendChild(li);
+                        if(sub.status==='live' || sub.status==='completed'){
+                            fetch('/backend/metrics.php?action=post_metrics&submission_id='+sub.id)
+                                .then(r=>r.json()).then(m=>{if(m.success){document.getElementById('bm'+sub.id).textContent=` Reach ${m.data.metrics.reach||0} Earn $${m.data.estimated_earnings.toFixed(2)}`;}});
+                        }
                     });
 
                     document.querySelectorAll('.approve-sub').forEach(btn => {
@@ -374,6 +389,25 @@
             }
         }
 
+        async function loadForum(){
+            const res = await fetch('/backend/community.php?action=list');
+            const data = await res.json();
+            const ul=document.getElementById('forum-list');
+            ul.innerHTML='';
+            if(data.success){
+                data.data.forEach(p=>{const li=document.createElement('li');li.textContent=`${p.author}: ${p.content}`;ul.appendChild(li);});
+            }
+        }
+
+        document.getElementById('forum-form').addEventListener('submit',async e=>{
+            e.preventDefault();
+            const content=document.getElementById('forum-content').value;
+            const fd=new FormData();fd.append('content',content);
+            const res=await fetch('/backend/community.php?action=post',{method:'POST',body:fd});
+            const d=await res.json();
+            if(d.success){document.getElementById('forum-content').value='';loadForum();}else alert(d.message);
+        });
+
         let chart;
         async function loadAnalytics() {
             const sel = document.getElementById('analytics-campaign');
@@ -399,6 +433,7 @@
             loadProfile();
             loadCampaigns().then(loadAnalytics);
             loadSubmissions();
+            loadForum();
 
             const links = document.querySelectorAll('.sidebar ul li a');
             const sections = document.querySelectorAll('.main-content section');

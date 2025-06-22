@@ -19,6 +19,7 @@
                 <li><a href="#active-campaigns" data-section="active-campaigns"><i class="fas fa-chart-line"></i> Active Campaigns</a></li>
                 <li><a href="#notifications" data-section="notifications"><i class="fas fa-bell"></i> Notifications</a></li>
                 <li><a href="#analytics" data-section="analytics"><i class="fas fa-chart-bar"></i> Analytics</a></li>
+                <li><a href="#community" data-section="community"><i class="fas fa-users"></i> Community</a></li>
             </ul>
         </div>
 
@@ -74,6 +75,15 @@
                 <h3>Performance Analytics</h3>
                 <canvas id="infChart"></canvas>
             </section>
+
+            <section id="community" style="display:none;">
+                <h3>Community Forum</h3>
+                <form id="community-form">
+                    <textarea id="community-content" placeholder="Share something" required style="width:100%;"></textarea>
+                    <button type="submit">Post</button>
+                </form>
+                <ul id="community-list"></ul>
+            </section>
         </div>
     </div>
 
@@ -115,6 +125,33 @@
                 console.error('Refresh failed', e);
             }
         }
+
+        async function loadCommunity(){
+            const res = await fetch('/backend/community.php?action=list');
+            const data = await res.json();
+            const ul = document.getElementById('community-list');
+            ul.innerHTML = '';
+            if(data.success){
+                data.data.forEach(p=>{
+                    const li=document.createElement('li');
+                    li.textContent = `${p.author}: ${p.content}`;
+                    ul.appendChild(li);
+                });
+            }
+        }
+
+        document.getElementById('community-form').addEventListener('submit', async e=>{
+            e.preventDefault();
+            const content = document.getElementById('community-content').value;
+            const fd = new FormData();
+            fd.append('content', content);
+            const res = await fetch('/backend/community.php?action=post',{method:'POST',body:fd});
+            const d=await res.json();
+            if(d.success){
+                document.getElementById('community-content').value='';
+                loadCommunity();
+            }else alert(d.message);
+        });
 
         // Load campaigns
         async function loadCampaigns() {
@@ -227,6 +264,25 @@
            }
        }
 
+        async function loadActiveCampaigns(){
+            try{
+                const r = await fetch('/backend/submissions.php?action=list');
+                const d = await r.json();
+                const list=document.getElementById('active-campaign-list');
+                list.innerHTML='';
+                if(d.success){
+                    const live=d.data.filter(s=>s.status==='live' || s.status==='completed');
+                    for(const s of live){
+                        const li=document.createElement('li');
+                        li.innerHTML=`<span class="money">💰</span> Post ID: ${s.post_id || ''} - <a href="${s.posted_url||'#'}" target="_blank">View</a> <span class="metrics" id="m${s.id}"></span>`;
+                        list.appendChild(li);
+                        fetch('/backend/metrics.php?action=post_metrics&submission_id='+s.id)
+                            .then(r=>r.json()).then(m=>{ if(m.success){ document.getElementById('m'+s.id).textContent = ` Reach ${m.data.metrics.reach||0} Earn $${m.data.estimated_earnings.toFixed(2)}`; }});
+                    }
+                }
+            }catch(e){console.error(e);}
+        }
+
         let chart;
         async function loadAnalytics() {
             const res = await fetch('/backend/metrics.php?action=overview');
@@ -269,7 +325,9 @@
             refreshProfile().then(loadProfile);
             loadCampaigns();
             loadRequests();
+            loadActiveCampaigns();
             loadAnalytics();
+            loadCommunity();
         });
     </script>
 </body>

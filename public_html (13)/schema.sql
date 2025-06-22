@@ -223,5 +223,18 @@ CREATE TABLE IF NOT EXISTS pixel_events (
     utm_term VARCHAR(100) DEFAULT NULL,
     ip_address VARCHAR(45) DEFAULT NULL,
     user_agent TEXT,
+    page_url VARCHAR(255) DEFAULT NULL,
+    referrer VARCHAR(255) DEFAULT NULL,
+    session_id VARCHAR(64) DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Community posts for forums and influencer discussions
+CREATE TABLE IF NOT EXISTS community_posts (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    author_id INT NOT NULL,
+    role ENUM('brand','influencer') NOT NULL,
+    content TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_author (author_id, role)
 );

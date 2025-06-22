@@ -219,3 +219,5 @@ body {
         transform: translateY(0);
     }
 }
+.metrics{margin-left:8px;color:#555;}
+.money{color:#28a745;font-weight:bold;margin-right:4px;}

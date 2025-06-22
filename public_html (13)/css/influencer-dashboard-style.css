@@ -325,3 +325,5 @@ body {
 .close-popup-btn:hover {
     color: #ff0000;
 }
+.money{color:#28a745;font-weight:bold;margin-right:4px;}
+.metrics{margin-left:8px;color:#555;}

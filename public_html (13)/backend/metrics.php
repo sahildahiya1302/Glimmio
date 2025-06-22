@@ -115,6 +115,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'complete_profile') {
         error_log('Metrics overview error: ' . $e->getMessage());
         respond(false, null, 'Failed to fetch metrics');
     }
+} elseif ($_SERVER['REQUEST_METHOD']==='GET' && $action === 'post_metrics') {
+    $subId = $_GET['submission_id'] ?? '';
+    if(!$subId) respond(false,null,'Submission required');
+    $role = $_SESSION['role'];
+    $user = $_SESSION['user_id'];
+    $checkSql = $role==='brand'
+        ? 'SELECT cs.id,c.rate,c.goal_type FROM content_submissions cs JOIN campaigns c ON cs.campaign_id=c.id WHERE cs.id=? AND c.brand_id=?'
+        : 'SELECT cs.id,c.rate,c.goal_type FROM content_submissions cs JOIN campaigns c ON cs.campaign_id=c.id WHERE cs.id=? AND cs.influencer_id=?';
+    $stmt=$pdo->prepare($checkSql);
+    $stmt->execute([$subId,$user]);
+    $row=$stmt->fetch(PDO::FETCH_ASSOC);
+    if(!$row) respond(false,null,'Not found');
+    $m=$pdo->prepare('SELECT * FROM metrics WHERE submission_id=?');
+    $m->execute([$subId]);
+    $metrics=$m->fetch(PDO::FETCH_ASSOC);
+    if(!$metrics) $metrics=[];
+    $earn=0;
+    if($metrics){
+        if($row['goal_type']=='CPM'){
+            $earn=($metrics['impressions']/1000)*$row['rate'];
+        }else{
+            $earn=$metrics['engagement_total']*$row['rate'];
+        }
+    }
+    respond(true,['metrics'=>$metrics,'estimated_earnings'=>$earn]);
 } else {
     respond(false, 'Invalid request');
 }

@@ -14,12 +14,23 @@ $action=$_GET['action'] ?? 'list';
 if($action==='list'){
     $filter=$_GET['filter'] ?? '';
     $category=$_GET['category'] ?? '';
+    $author=intval($_GET['author'] ?? 0);
+    $authorRole=$_GET['role'] ?? '';
     $sql='SELECT cp.*, IF(cp.role="brand",b.company_name,i.username) AS author, cp.like_count, cp.share_count, cp.save_count, cp.comment_count FROM community_posts cp LEFT JOIN brands b ON cp.role="brand" AND cp.author_id=b.id LEFT JOIN influencers i ON cp.role="influencer" AND cp.author_id=i.id';
+    $conds=[];
     $params=[];
     if($category){
-        $sql.=' WHERE (i.category=? OR b.industry=?)';
+        $conds[]='(i.category=? OR b.industry=?)';
         $params[]=$category;
         $params[]=$category;
+    }
+    if($author){
+        $conds[]='cp.author_id=? AND cp.role=?';
+        $params[]=$author;
+        $params[]=$authorRole;
+    }
+    if($conds){
+        $sql.=' WHERE '.implode(' AND ',$conds);
     }
     if($filter==='trending'){
         $sql.=' ORDER BY (cp.like_count+cp.comment_count+cp.share_count) DESC LIMIT 50';

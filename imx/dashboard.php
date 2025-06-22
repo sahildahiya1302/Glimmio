@@ -31,10 +31,11 @@ $role=$_SESSION['role'];
         <h2 style="display:none;">Dashboard</h2>
         <ul>
             <li><a href="#feed" class="tablink" data-title="Feed">🏠</a></li>
-            <li><a href="#ads" class="tablink" data-title="Campaigns">📢</a></li>
             <li><a href="#explore" class="tablink" data-title="Explore">🔍</a></li>
-            <li><a href="dm.php" data-title="DM">✉️</a></li>
             <li><button id="add-post-btn" class="add-post" data-title="Post">➕</button></li>
+            <li><a href="#ads" class="tablink" data-title="Campaigns">📣</a></li>
+            <li><a href="profile.php" data-title="Profile">👤</a></li>
+            <li><a href="dm.php" data-title="DM">✉️</a></li>
         </ul>
     </div>
     <div class="main-content">

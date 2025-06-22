@@ -41,8 +41,8 @@
     </div>
 
 <script>
-async function loadUsers() {
-    const res = await fetch('/backend/admin.php?action=list_users');
+async function loadAccounts() {
+    const res = await fetch('/backend/admin.php?action=list_accounts');
     const data = await res.json();
     const tbody = document.querySelector('#user-table tbody');
     tbody.innerHTML = '';
@@ -50,10 +50,10 @@ async function loadUsers() {
         data.data.forEach(u => {
             const tr = document.createElement('tr');
             tr.innerHTML = `<td>${u.id}</td><td>${u.email}</td><td>${u.role}</td><td>${u.badge_level||''}</td><td>${u.created_at}</td>` +
-            `<td><select data-id="${u.id}"><option value="brand">Brand</option><option value="influencer">Influencer</option><option value="admin">Admin</option></select></td>`;
-            tr.querySelector('select').value = u.role;
+            `<td><select data-id="${u.id}"><option value="bronze">Bronze</option><option value="silver">Silver</option><option value="gold">Gold</option></select></td>`;
+            tr.querySelector('select').value = u.badge_level;
             tr.querySelector('select').addEventListener('change', async e => {
-                await fetch('/backend/admin.php?action=set_role', {method:'POST', body:new URLSearchParams({user_id:u.id, role:e.target.value})});
+                await fetch('/backend/admin.php?action=set_badge', {method:'POST', body:new URLSearchParams({user_id:u.id, role:u.role, badge:e.target.value})});
             });
             tbody.appendChild(tr);
         });
@@ -103,7 +103,7 @@ async function loadSubmissions() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    loadUsers();
+    loadAccounts();
     loadCampaigns();
     loadRequests();
     loadSubmissions();

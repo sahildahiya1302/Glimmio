@@ -26,7 +26,7 @@ $action = $_GET['action'] ?? '';
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && $action === 'profile') {
     // Fetch brand profile
     $user_id = $_SESSION['user_id'];
-    $stmt = $pdo->prepare('SELECT b.id, b.name AS company_name, b.email, b.profile_pic AS logo_url, b.gstin, b.industry, b.website FROM brands b WHERE b.user_id = ?');
+    $stmt = $pdo->prepare('SELECT id, name AS company_name, email, profile_pic AS logo_url, gstin, industry, website FROM brands WHERE id = ?');
     $stmt->execute([$user_id]);
     $profile = $stmt->fetch();
     if ($profile) {
@@ -60,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && $action === 'profile') {
     }
 
     // Check if profile exists
-    $stmt = $pdo->prepare('SELECT id FROM brands WHERE user_id = ?');
+    $stmt = $pdo->prepare('SELECT id FROM brands WHERE id = ?');
     $stmt->execute([$user_id]);
     $exists = $stmt->fetch();
 
@@ -72,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && $action === 'profile') {
             $sql .= ', profile_pic = ?';
             $params[] = $logo_url;
         }
-        $sql .= ' WHERE user_id = ?';
+        $sql .= ' WHERE id = ?';
         $params[] = $user_id;
 
         $stmt = $pdo->prepare($sql);
@@ -83,7 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && $action === 'profile') {
         }
     } else {
         // Insert new profile
-        $stmt = $pdo->prepare('INSERT INTO brands (user_id, name, website, gstin, industry, email, profile_pic) VALUES (?, ?, ?, ?, ?, ?, ?)');
+        $stmt = $pdo->prepare('INSERT INTO brands (id, name, website, gstin, industry, email, profile_pic) VALUES (?, ?, ?, ?, ?, ?, ?)');
         if ($stmt->execute([$user_id, $company_name, $website, $gstin, $industry, $email, $logo_url])) {
             respond(true, null, 'Profile created successfully.');
         } else {

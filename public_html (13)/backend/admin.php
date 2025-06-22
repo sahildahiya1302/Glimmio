@@ -21,27 +21,30 @@ try {
 
 $action = $_GET['action'] ?? '';
 
-if ($action === 'list_users' && $_SERVER['REQUEST_METHOD'] === 'GET') {
-    $stmt = $pdo->query('SELECT id, email, role, badge_level, profile_complete, created_at FROM users ORDER BY created_at DESC');
-    respond(true, $stmt->fetchAll(PDO::FETCH_ASSOC));
+if ($action === 'list_accounts' && $_SERVER['REQUEST_METHOD'] === 'GET') {
+    $brands = $pdo->query("SELECT id, email, 'brand' AS role, badge_level, profile_complete, created_at FROM brands ORDER BY created_at DESC")->fetchAll(PDO::FETCH_ASSOC);
+    $influencers = $pdo->query("SELECT id, email, 'influencer' AS role, badge_level, profile_complete, created_at FROM influencers ORDER BY created_at DESC")->fetchAll(PDO::FETCH_ASSOC);
+    respond(true, array_merge($brands, $influencers));
 }
 
-if ($action === 'set_role' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($action === 'set_badge' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $userId = $_POST['user_id'] ?? '';
     $role = $_POST['role'] ?? '';
-    if (!$userId || !in_array($role, ['brand','influencer','admin'])) {
+    $badge = $_POST['badge'] ?? '';
+    if (!$userId || !in_array($role, ['brand','influencer']) || !in_array($badge, ['bronze','silver','gold'])) {
         respond(false, null, 'Invalid parameters');
     }
-    $stmt = $pdo->prepare('UPDATE users SET role=? WHERE id=?');
-    if ($stmt->execute([$role, $userId])) {
-        respond(true, null, 'Role updated');
+    $table = $role === 'brand' ? 'brands' : 'influencers';
+    $stmt = $pdo->prepare("UPDATE {$table} SET badge_level=? WHERE id=?");
+    if ($stmt->execute([$badge, $userId])) {
+        respond(true, null, 'Badge updated');
     } else {
         respond(false, null, 'Update failed');
     }
 }
 
 if ($action === 'list_campaigns' && $_SERVER['REQUEST_METHOD'] === 'GET') {
-    $stmt = $pdo->query('SELECT c.id, c.title, c.status, c.budget_total, c.commission_percent, u.email AS brand_email FROM campaigns c JOIN users u ON c.brand_id = u.id ORDER BY c.created_at DESC');
+    $stmt = $pdo->query("SELECT c.id, c.title, c.status, c.budget_total, c.commission_percent, b.email AS brand_email FROM campaigns c JOIN brands b ON c.brand_id = b.id ORDER BY c.created_at DESC");
     respond(true, $stmt->fetchAll(PDO::FETCH_ASSOC));
 }
 
@@ -60,7 +63,7 @@ if ($action === 'update_campaign_status' && $_SERVER['REQUEST_METHOD'] === 'POST
 }
 
 if ($action === 'list_requests' && $_SERVER['REQUEST_METHOD'] === 'GET') {
-    $stmt = $pdo->query('SELECT r.*, u.email AS influencer_email, c.title FROM requests r JOIN users u ON r.influencer_uid = u.id JOIN campaigns c ON r.campaign_id = c.id ORDER BY r.created_at DESC');
+    $stmt = $pdo->query("SELECT r.*, i.email AS influencer_email, c.title FROM requests r JOIN influencers i ON r.influencer_uid = i.id JOIN campaigns c ON r.campaign_id = c.id ORDER BY r.created_at DESC");
     respond(true, $stmt->fetchAll(PDO::FETCH_ASSOC));
 }
 
@@ -79,7 +82,7 @@ if ($action === 'update_request_status' && $_SERVER['REQUEST_METHOD'] === 'POST'
 }
 
 if ($action === 'list_submissions' && $_SERVER['REQUEST_METHOD'] === 'GET') {
-    $stmt = $pdo->query('SELECT cs.*, u.email AS influencer_email, c.title FROM content_submissions cs JOIN users u ON cs.influencer_id = u.id JOIN campaigns c ON cs.campaign_id = c.id ORDER BY cs.created_at DESC');
+    $stmt = $pdo->query("SELECT cs.*, i.email AS influencer_email, c.title FROM content_submissions cs JOIN influencers i ON cs.influencer_id = i.id JOIN campaigns c ON cs.campaign_id = c.id ORDER BY cs.created_at DESC");
     respond(true, $stmt->fetchAll(PDO::FETCH_ASSOC));
 }
 

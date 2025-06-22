@@ -75,8 +75,6 @@
                     <input type="number" id="campaign-rate" name="rate" placeholder="Rate" required />
                     <label for="campaign-budget">Total Budget</label>
                     <input type="number" id="campaign-budget" name="budget_total" placeholder="Budget" required />
-                    <label for="campaign-commission">Commission %</label>
-                    <input type="number" step="0.01" id="campaign-commission" name="commission_percent" placeholder="10" />
                     <button type="submit" id="post-campaign-btn">Post Campaign</button>
                 </form>
             </section>

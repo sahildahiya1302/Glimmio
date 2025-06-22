@@ -15,6 +15,7 @@
             <form id="email-login-form">
                 <input type="email" id="login-email" placeholder="Email" required>
                 <input type="password" id="login-password" placeholder="Password" required>
+                <input type="hidden" id="csrf_login" name="csrf_token" />
                 <button type="submit">Login</button>
             </form>
             <p>Don't have an account? <button id="show-register" style="background:none; border:none; color:#D0007D; cursor:pointer; padding:0; font-size:1em;">Register</button></p>
@@ -36,6 +37,7 @@
                 <input type="email" id="register-email" placeholder="Email" required>
                 <input type="password" id="register-password" placeholder="Password" required>
                 <input type="password" id="register-password-confirm" placeholder="Confirm Password" required>
+                <input type="hidden" id="csrf_generic" name="csrf_token" />
                 <label for="register-role">Register as</label>
                 <select id="register-role">
                     <option value="brand">Brand</option>
@@ -56,6 +58,7 @@
                 <input type="email" id="brand-register-email" placeholder="Email" required style="width:100%; margin:8px 0; padding:8px; box-sizing:border-box;" />
                 <input type="password" id="brand-register-password" placeholder="Password" required style="width:100%; margin:8px 0; padding:8px; box-sizing:border-box;" />
                 <input type="password" id="brand-register-password-confirm" placeholder="Confirm Password" required style="width:100%; margin:8px 0; padding:8px; box-sizing:border-box;" />
+                <input type="hidden" id="csrf_brand" name="csrf_token" />
                 <button type="submit" style="width:100%; padding:10px; background-color:#D0007D; color:white; border:none; cursor:pointer; font-size:16px; border-radius:4px;">Register</button>
             </form>
         </div>
@@ -70,12 +73,25 @@
                 <input type="email" id="influencer-register-email" placeholder="Email" required style="width:100%; margin:8px 0; padding:8px; box-sizing:border-box;" />
                 <input type="password" id="influencer-register-password" placeholder="Password" required style="width:100%; margin:8px 0; padding:8px; box-sizing:border-box;" />
                 <input type="password" id="influencer-register-password-confirm" placeholder="Confirm Password" required style="width:100%; margin:8px 0; padding:8px; box-sizing:border-box;" />
+                <input type="hidden" id="csrf_influencer" name="csrf_token" />
                 <button type="submit" style="width:100%; padding:10px; background-color:#D0007D; color:white; border:none; cursor:pointer; font-size:16px; border-radius:4px;">Register</button>
             </form>
         </div>
     </div>
 
     <script>
+        let csrfToken = '';
+        fetch('/backend/auth.php?action=csrf')
+            .then(r => r.json())
+            .then(d => {
+                csrfToken = d.token;
+                document.getElementById('csrf_login').value = csrfToken;
+                document.getElementById('csrf_brand').value = csrfToken;
+                document.getElementById('csrf_influencer').value = csrfToken;
+                const gen = document.getElementById('csrf_generic');
+                if (gen) gen.value = csrfToken;
+            });
+
         // Modal open/close handlers
         const brandModal = document.getElementById('brand-register-modal');
         const influencerModal = document.getElementById('influencer-register-modal');
@@ -133,11 +149,15 @@
                 body: new URLSearchParams({
                     action: 'login',
                     email: email,
-                    password: password
+                    password: password,
+                    csrf_token: csrfToken
                 })
             });
             const result = await response.json();
             alert(result.message);
+            if (result.success && result.token) {
+                localStorage.setItem('jwt', result.token);
+            }
             if (result.success && result.redirect) {
                 window.location.href = result.redirect;
             }
@@ -162,7 +182,8 @@
                     action: 'register',
                     email: email,
                     password: password,
-                    role: 'brand'
+                    role: 'brand',
+                    csrf_token: csrfToken
                 })
             });
             const result = await response.json();
@@ -191,13 +212,18 @@
                     action: 'register',
                     email: email,
                     password: password,
-                    role: 'influencer'
+                    role: 'influencer',
+                    csrf_token: csrfToken
                 })
             });
             const result = await response.json();
             alert(result.message);
             if (result.success) {
                 influencerModal.style.display = 'none';
+                // Redirect to Instagram OAuth to fetch profile
+                window.location.href = 'https://api.instagram.com/oauth/authorize?client_id=' +
+                    encodeURIComponent('YOUR_INSTAGRAM_CLIENT_ID') +
+                    '&redirect_uri=https://glimmio.com/instagram-callback.php&scope=user_profile&response_type=code';
             }
         });
     </script>

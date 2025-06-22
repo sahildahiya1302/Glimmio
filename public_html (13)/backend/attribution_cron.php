@@ -46,7 +46,8 @@ try {
                 respond(false, 'Password must be at least 6 characters.');
             }
 
-            $stmt = $pdo->prepare('SELECT id FROM users WHERE email = ?');
+            $table = $role === 'brand' ? 'brands' : ($role === 'admin' ? 'brands' : 'influencers');
+            $stmt = $pdo->prepare("SELECT id FROM {$table} WHERE email = ?");
             $stmt->execute([$email]);
             if ($stmt->fetch()) {
                 respond(false, 'Email is already registered.');
@@ -56,16 +57,9 @@ try {
             if (!in_array($role, ['brand', 'influencer', 'admin'])) {
                 $role = 'brand';
             }
-            $stmt = $pdo->prepare('INSERT INTO users (email, password_hash, role, profile_complete) VALUES (?, ?, ?, 0)');
-            if ($stmt->execute([$email, $password_hash, $role])) {
+            $stmt = $pdo->prepare("INSERT INTO {$table} (email, password_hash) VALUES (?, ?)");
+            if ($stmt->execute([$email, $password_hash])) {
                 $userId = $pdo->lastInsertId();
-                if ($role === 'brand') {
-                    $stmtProfile = $pdo->prepare('INSERT INTO brands (user_id, email) VALUES (?, ?)');
-                    $stmtProfile->execute([$userId, $email]);
-                } else {
-                    $stmtProfile = $pdo->prepare('INSERT INTO influencers (user_id, email) VALUES (?, ?)');
-                    $stmtProfile->execute([$userId, $email]);
-                }
                 // create wallet for the user
                 $walletStmt = $pdo->prepare('INSERT INTO wallets (user_id, wallet_type) VALUES (?, ?)');
                 $walletStmt->execute([$userId, $role]);
@@ -83,29 +77,29 @@ try {
                 respond(false, 'Invalid email address.');
             }
 
-            $stmt = $pdo->prepare('SELECT id, password_hash, role, profile_complete FROM users WHERE email = ?');
+            // Check brand first
+            $stmt = $pdo->prepare('SELECT id, password_hash, profile_complete FROM brands WHERE email = ?');
             $stmt->execute([$email]);
             $user = $stmt->fetch();
-
             if ($user && password_verify($password, $user['password_hash'])) {
                 $_SESSION['user_id'] = $user['id'];
-                $_SESSION['role'] = $user['role'];
-
-                if (!$user['profile_complete']) {
-                    $redirect = '/pages/onboarding.php';
-                } else {
-                    if ($user['role'] === 'influencer') {
-                        $redirect = '/pages/influencer-dashboard.php';
-                    } elseif ($user['role'] === 'admin') {
-                        $redirect = '/pages/admin-dashboard.php';
-                    } else {
-                        $redirect = '/pages/brand-dashboard.php';
-                    }
-                }
-                respond(true, 'Login successful.', $redirect, ['role' => $user['role']]);
-            } else {
-                respond(false, 'Invalid email or password.');
+                $_SESSION['role'] = 'brand';
+                $redirect = $user['profile_complete'] ? '/pages/brand-dashboard.php' : '/pages/onboarding.php';
+                respond(true, 'Login successful.', $redirect, ['role' => 'brand']);
             }
+
+            // Then influencer
+            $stmt = $pdo->prepare('SELECT id, password_hash, profile_complete FROM influencers WHERE email = ?');
+            $stmt->execute([$email]);
+            $user = $stmt->fetch();
+            if ($user && password_verify($password, $user['password_hash'])) {
+                $_SESSION['user_id'] = $user['id'];
+                $_SESSION['role'] = 'influencer';
+                $redirect = $user['profile_complete'] ? '/pages/influencer-dashboard.php' : '/pages/onboarding.php';
+                respond(true, 'Login successful.', $redirect, ['role' => 'influencer']);
+            }
+
+            respond(false, 'Invalid email or password.');
 
         } else {
             respond(false, 'Invalid action.');

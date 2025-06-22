@@ -93,34 +93,31 @@ $name = $user_info['name'] ?? '';
 try {
     $pdo = db_connect();
 
-    // Check if meta_user_id already linked to a user
-    $stmt = $pdo->prepare('SELECT id, role FROM users WHERE meta_user_id = ?');
+    $table = ($role === 'brand') ? 'brands' : 'influencers';
+    // Check if meta_user_id already linked to an account
+    $stmt = $pdo->prepare("SELECT id FROM {$table} WHERE meta_user_id = ?");
     $stmt->execute([$meta_user_id]);
     $existing_user = $stmt->fetch();
 
     if ($existing_user) {
-        // User exists, check role matches
-        if ($existing_user['role'] !== $role) {
-            respond(false, 'Meta account linked to different role.');
-        }
         // Log user in
         $_SESSION['user_id'] = $existing_user['id'];
-        $_SESSION['role'] = $existing_user['role'];
+        $_SESSION['role'] = $role;
         $redirect = ($role === 'influencer') ? 'influencer-dashboard.php' : 'brand-dashboard.php';
         respond(true, 'Login successful.', $redirect);
     } else {
         // Register new user with meta_user_id
         // Check if email already exists
-        $stmt = $pdo->prepare('SELECT id FROM users WHERE email = ?');
+        $stmt = $pdo->prepare("SELECT id FROM {$table} WHERE email = ?");
         $stmt->execute([$email]);
         if ($stmt->fetch()) {
             respond(false, 'Email already registered.');
         }
 
-        $stmt = $pdo->prepare('INSERT INTO users (email, role, meta_user_id) VALUES (?, ?, ?)');
-        if ($stmt->execute([$email, $role, $meta_user_id])) {
-            $user_id = $pdo->lastInsertId();
-            $_SESSION['user_id'] = $user_id;
+        $stmt = $pdo->prepare("INSERT INTO {$table} (email, meta_user_id) VALUES (?, ?)");
+        if ($stmt->execute([$email, $meta_user_id])) {
+            $account_id = $pdo->lastInsertId();
+            $_SESSION['user_id'] = $account_id;
             $_SESSION['role'] = $role;
             $redirect = ($role === 'influencer') ? 'influencer-dashboard.php' : 'brand-dashboard.php';
             respond(true, 'Registration and login successful.', $redirect);

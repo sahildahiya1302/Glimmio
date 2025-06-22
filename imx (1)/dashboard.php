@@ -147,8 +147,14 @@ async function loadInfluencers(){
     if (!catEl || !budgetEl) return;
 
     const cat = catEl.value;
-    let url='/backend/influencer.php?action=list_all';
-    if(cat) url+='&category='+encodeURIComponent(cat);
+    const budget=parseInt(budgetEl.value||0);
+    let url;
+    if(!cat && !budget){
+        url='/backend/influencer.php?action=top_instagram';
+    }else{
+        url='/backend/influencer.php?action=list_all';
+        if(cat) url+='&category='+encodeURIComponent(cat);
+    }
     const res=await fetch(url);
     const data=await res.json();
     const tbody=document.querySelector('#inf-table tbody');
@@ -156,6 +162,9 @@ async function loadInfluencers(){
     tbody.innerHTML='';
     if(data.success){
         let rows=data.data;
+        if(url.includes('top_instagram')){
+            rows=(rows.data||[]).map(i=>({username:i.username,email:'',badge_level:'',category:'',followers_count:i.followers_count,reach:'',engagement:'',id:i.id||''}));
+        }
         const reachMin=parseInt(budgetEl.value||0);
         if(reachMin) rows=rows.filter(r=>(parseInt(r.reach||0)>=reachMin));
         rows.forEach(i=>{
@@ -183,7 +192,19 @@ function showPostForm(){
         <h2>Add New Post</h2>
         <form id="post-form" enctype="multipart/form-data">
             <textarea id="post-content" placeholder="Share something" required class="post-text"></textarea>
-            <input type="file" id="post-image" name="images[]" multiple />
+            <div style="margin:10px 0;">
+                <label>Media</label>
+                <input type="file" id="post-image" name="images[]" accept="image/*,video/*" capture="environment" multiple />
+            </div>
+            <div style="margin:10px 0;">
+                <label>Type:</label>
+                <select id="post-type">
+                    <option value="post">Post</option>
+                    <option value="story">Story</option>
+                    <option value="reel">Reel</option>
+                </select>
+                <label style="margin-left:10px;"><input type="checkbox" id="share-ig" /> Share to Instagram</label>
+            </div>
             <input type="text" id="poll-question" placeholder="Poll question" />
             <input type="text" id="poll-options" placeholder="Option1|Option2" />
             <button type="submit">Post</button>
@@ -202,6 +223,8 @@ function showPostForm(){
         fd.append('content',document.getElementById('post-content').value);
         const imgs=document.getElementById('post-image').files;
         for(let i=0;i<imgs.length;i++){fd.append('images[]',imgs[i]);}
+        fd.append('post_type',document.getElementById('post-type').value);
+        fd.append('share_to_ig',document.getElementById('share-ig').checked?'1':'');
         fd.append('poll_question',document.getElementById('poll-question').value);
         fd.append('poll_options',document.getElementById('poll-options').value);
         const res=await fetch('/backend/community.php?action=post',{method:'POST',body:fd});

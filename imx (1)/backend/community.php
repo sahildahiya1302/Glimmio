@@ -1,5 +1,6 @@
 <?php
 require_once 'db.php';
+require_once __DIR__ . '/../includes/instagram_api.php';
 session_start();
 
 function respond($s,$d=null,$m=''){header('Content-Type: application/json');echo json_encode(['success'=>$s,'data'=>$d,'message'=>$m]);exit;}
@@ -70,8 +71,18 @@ if($action==='post' && $_SERVER['REQUEST_METHOD']==='POST'){
     }
     $pollQ=trim($_POST['poll_question'] ?? '');
     $pollOpts=$_POST['poll_options'] ?? '';
+    $shareIG = !empty($_POST['share_to_ig']);
     $stmt=$pdo->prepare('INSERT INTO community_posts (author_id,role,content,image_url,poll_question,poll_options) VALUES (?,?,?,?,?,?)');
     $stmt->execute([$_SESSION['user_id'], $_SESSION['role'], $content,$imgUrl,$pollQ,$pollOpts]);
+    if($shareIG && $imgUrl){
+        $tokenStmt=$pdo->prepare('SELECT access_token FROM instagram_tokens WHERE user_id=?');
+        $tokenStmt->execute([$_SESSION['user_id']]);
+        $token=$tokenStmt->fetchColumn();
+        if($token){
+            $imgs=explode('|',$imgUrl);
+            instagram_publish_photo($_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].$imgs[0], $content, $token);
+        }
+    }
     respond(true,null,'Posted');
 }
 

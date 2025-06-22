@@ -1,0 +1,1213 @@
+body {
+    max-width: 100vw;
+    margin: 0;
+    padding: 0;
+    background-color: #000000;
+    color: #000000;
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+
+        font-family: 'Garet', sans-serif; /* Apply the Garet font */
+
+}
+
+
+:root {
+    --highlight-color: #ff4500; /* Solid orange color for text or other properties */
+}
+
+@font-face {
+    font-family: 'Garet';
+    src: url('../fonts/Garet-W05-Regular.otf') format('opentype');
+        
+
+}
+
+@font-face {
+    font-family: 'High Cruiser';
+    src: url('../fonts/HighCruiser.otf') format('opentype');
+}
+
+.btn {
+    font-family: 'High Cruiser', sans-serif;
+    background-color: transparent;
+    color: black;
+    padding: 10px 10px;
+    border: 2px solid black;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+    font-size: 0.5rem;
+    text-transform: uppercase; /* Optional: Makes text uppercase */
+    text-align: center;
+}
+
+.btn:hover {
+    background-color: transparent;
+     background: var(--highlight-gradient);  /* Apply gradient as background */
+    -webkit-background-clip: text; /* Apply background gradient to text */
+    color: var(--highlight-color);  /* Make text color transparent to see the gradient */
+    border-color: var(--highlight-color);
+   
+}
+
+#contact-now {
+    color: #fff;  /* White text color */
+    border: 2px solid white;
+
+}
+#contact-now:hover {
+    background-color: transparent;
+    background: var(--highlight-gradient);  /* Apply gradient as background */
+   -webkit-background-clip: text; /* Apply background gradient to text */
+   color: var(--highlight-color);  /* Make text color transparent to see the gradient */
+   border-color: var(--highlight-color);
+
+}
+
+
+/* Header styling */
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: #000000;
+    z-index: 1000;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    height: auto; /* Set height to auto to adapt based on content */
+}
+
+.header .container {
+    height:8vh;
+    left: 0px;
+    display: flex;
+    padding: 1vh 2vw; /* Add padding to top and bottom */
+}
+
+/* Hide the logo and buttons when scrolled */
+.header.hidden {
+    top: -10vh; /* Adjust this value based on your header's height */
+}
+.row.align-items-center {
+    left: 0;
+    width: 95vw;
+    display: flex;
+    justify-content: space-between; /* Align items to left and right edges */
+    align-items: center; /* Center items vertically */
+    padding: 1vh 1vw; /* Adds padding on left and right for margin */
+}
+.header img {
+    height: 80px; /* Scales with viewport height */
+    width: auto;
+}
+
+
+
+
+.services {
+    width:100vw;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background-color: #ffffff;
+    position: relative;
+    text-decoration: none; /* Remove the underline */
+    overflow-x: auto; /* Enable horizontal scrolling */
+    white-space: nowrap; /* Prevent wrapping of child elements */
+}
+
+.service {
+    cursor: pointer;
+    padding: 10px 20px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    color: #000000;
+    font-weight: bold;
+    text-decoration: none; /* Remove the underline */
+}
+.service a {
+    color: inherit; /* Inherit the color from the parent element */
+    text-decoration: none; /* Remove the underline */
+        display: block; /* Makes the anchor tag fill the entire div */
+}
+.service:hover {
+    background-color: var(--highlight-color);
+    color: #ffffff;
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+    .top-services {
+        font-size: 0.8rem; /* Reduces font size on small screens */
+        padding: 1vw 0.5vw;
+    }
+    .service {
+        padding: 0.3rem 0.8rem;
+    }
+}
+
+
+
+
+
+/* White horizontal line */
+/* White horizontal line */
+/* White horizontal line */
+/* White horizontal line */
+   hr.off-white-line {
+    border: none;
+    border-top: 2px solid #f5f5f5; /* Off-white color */
+    width: 95vw; /* Width of 95% of the viewport */
+    margin: 20px auto; /* Center the line horizontally */
+}
+
+/* Lead pop-up section */
+/* Lead pop-up section */
+/* Lead pop-up section */
+/* Lead pop-up section */
+.popup-overlay {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    z-index: 999; /* Ensure it's above all content */
+  }
+  
+  /* The pop-up form itself */
+  #lead-form-popup {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: auto;
+    padding: 20px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    border-radius: 8px;
+    box-sizing: border-box;
+    background-color: #000;
+   color: white;
+  }
+  /* When pop-up is active */
+.popup-active .form-header h3,
+.popup-active .form-content label,
+.popup-active .btn {
+    color: white;
+    
+}
+.popup-active .btn {
+border: 2px solid white;
+}
+  /* The close button inside the pop-up */
+  .close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+    background: transparent;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  
+
+
+/* Sticky Icon Section */
+/* Sticky Icon Section */
+/* Sticky Icon Section */
+/* Sticky Icon Section */
+.sticky-icon {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.fix-bottom-sticky-notes {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 12px;
+    padding: 10px;
+}
+
+.fix-bottom-sticky-notes a {
+    margin: 10px 0; /* Space between the icons */
+    text-decoration: none;
+    color: #fff;
+    transition: transform 0.3s ease, background-color 0.3s ease; /* Smooth transition */
+}
+
+.fix-bottom-sticky-notes a:hover {
+    transform: scale(1.1); /* Slightly enlarge icon on hover */
+}
+
+.icon-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.fix-bottom-sticky-notes i {
+    font-size: 24px;
+    color: #fff; /* Icon color */
+}
+
+.fix-bottom-sticky-notes a:first-child .icon-container {
+    background-color: #25D366; /* WhatsApp green */
+}
+
+.fix-bottom-sticky-notes a:last-child .icon-container {
+    background-color: #1DA1F2; /* Phone icon color */
+}
+
+/* Responsive Styles- mobile and small screens  */
+@media (max-width: 768px) {
+.fix-bottom-sticky-notes i {
+    font-size: 20px;
+    color: #fff; /* Icon color */
+}
+}
+
+
+/* Top Lead Generation section */
+/* Top Lead Generation section */
+/* Top Lead Generation section */
+/* We are very very Serious */
+
+
+.banner-img-section {
+    margin-right: 20px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    background-color: #000000;
+    padding-top: 4vh;
+    background-size: cover; /* Add this line to make the image cover the container */
+    margin-top: calc(5vh + 2vw); /* Adjusts to sit below the header */
+}
+
+
+.banner-img-section .container {
+    display: flex;
+    flex-direction:row;
+    align-items: center;
+    margin: 0 auto;
+ 
+}
+
+.banner-img-section .two-box {
+    flex: 1;
+    width: 60vw;
+    align-items: center;
+}
+
+.banner {
+    font-size: 48px;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    margin-right: 20px;
+  
+}
+
+.banner .highlight {
+    color: var(--highlight-color);
+}
+
+.banner-img-section h2 {
+    text-align: left;
+    color: white;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+
+
+.banner-img-section ul {
+    width: 1000px;
+    list-style-type: none;
+    padding-left: 1rem;
+    color: #888;
+
+}
+
+.banner-img-section ul li {
+    position: relative;
+    padding-left: 20px;
+    margin-bottom: 0.5rem;
+
+}
+
+.banner-img-section ul li:before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 10px;
+    height: 10px;
+    background-color: var(--highlight-color);
+    border-radius: 50%;
+    
+}
+
+
+
+
+.client-logo {
+    display: flex; /* Use flexbox to arrange items in a row */
+    justify-content: space-around; /* Center items horizontally */
+    align-items: center; /* Center items vertically */
+    flex-wrap: nowrap; /* Allow wrapping on smaller screens */
+}
+
+.logobox {
+    display: flex;
+    align-items: center; /* Center the logo inside the box */
+}
+
+.logobox img {
+    height: 100px;
+    width: 100px;
+}
+
+/* Form Container */
+.form-container {
+    width: 30vw;
+    padding: 20px;
+    margin-right: 20px;
+    background-color: white;
+}
+
+/* Form Header */
+.form-header h3 {
+    margin: 0;
+    padding: 10px 0;
+    text-align: center;
+    font-size: 30px;
+    color:black;
+}
+
+/* Form Content */
+.form-content {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Form Labels */
+.form-content label {
+    color: black;
+    font-weight: bold;
+}
+
+/* Form Inputs */
+.form-content input[type="text"],
+.form-content input[type="email"],
+.form-content input[type="tel"],
+.form-content select,
+.form-content textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+/* Form Select */
+.form-content select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+/* Form Textarea */
+.form-content textarea {
+    height: 100px;
+    resize: vertical;
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+    .banner-img-section {
+        flex-direction: column; /* Stack elements vertically */
+        align-items: center;
+        margin-right: 0;
+    }
+
+    .banner-img-section .container {
+        flex-direction: column; /* Stack the container items vertically */
+        align-items: center;
+    }
+
+    .banner-img-section .two-box {
+        width: 90vw; /* Adjust width for smaller screens */
+        margin-bottom: 20px; /* Add space between stacked elements */
+    }
+
+    .banner {
+        font-size: 36px; /* Reduce banner font size */
+        text-align: center;
+        margin-right: 0; /* Remove margin for better centering */
+    }
+
+    .banner-img-section h2 {
+        text-align: center; /* Center-align the heading */
+        font-size: 1.2rem; /* Reduce font size */
+    }
+
+    .banner-img-section ul {
+        width: auto; /* Adjust width for responsiveness */
+        padding-left: 0.2rem;
+    }
+
+    .form-container {
+        width: 90vw; /* Expand form to fit smaller screens */
+        margin-right: 0;
+        margin-bottom: 20px; /* Add spacing at the bottom */
+    }
+
+    .client-logo {
+        gap: 10px; /* Reduce gap between logos */
+        
+    }
+    .logobox img {
+    height: 80px;
+    width: 80px;
+}
+
+}
+
+
+
+
+
+
+
+/* USP Section Styling */
+/* USP Section Styling */
+/* USP Section Styling */
+/* USP Section Styling */
+.usp-section {
+    padding: 1vw 1vw;
+    color: #fff;
+    background-color: white; /* Added for contrast */
+}
+
+.usp-container {
+    margin: 0 auto;
+    text-align: center;
+}
+
+.usp-header h2 {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    letter-spacing: 0.2rem;
+    color: black;
+    text-align:left;
+}
+
+.usp-cards-wrapper {
+
+      display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.usp-card {
+    position: relative;
+    background-color: #fff;
+    padding: 0.2rem;
+    box-shadow: 0 0.5rem 1.25rem rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    text-align: left;
+}
+
+
+
+
+.usp-card-content {
+    display: flex;
+    flex-direction: row;
+    justify-items:center;
+    align-items:center;
+    gap:5px
+}
+
+.usp-card-icon img {
+    width: 40px;
+    height:40px;
+}
+
+.usp-card-right {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.usp-card h3 {
+    font-size: 1rem;
+    color: #000;
+    margin: 0rem;
+}
+
+.usp-card p {
+    font-size: 0.75rem;
+    color: #000;
+    line-height: 1.6;
+}
+
+
+
+
+
+/* Hero section */
+/* Hero section */
+/* Hero section */
+/* Hero section */
+
+
+.hero-section {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    height: auto;
+    overflow: hidden;
+  }
+  
+  .hero-section img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1;
+    opacity: 0.6;
+  }
+  
+  .hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at bottom left, rgba(0, 0, 0, 0.7), transparent 70%),
+                radial-gradient(circle at top left, rgba(0, 0, 0, 0.7), transparent 70%);
+    z-index: 1;
+  }
+  
+  .vertical-line {
+    height: 80vh;
+    width: 4px;
+    background-color: white;
+    margin: 2rem;
+    border-radius: 2px;
+    z-index: 2;
+
+  }
+    .hero-content {
+      width: 50%;
+      color: white;
+      border-radius: 8px;
+      z-index: 2;
+      align-items: flex-start;
+      margin: 2rem;
+
+
+    }
+
+    .hero-content h1 {
+      font-size: 5rem;
+      margin: 0rem;
+    }
+
+    .hero-content p {
+      font-size: 1.2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-button {
+      padding: 0.8rem 1.5rem;
+      font-size: 1rem;
+      color: white;
+      background-color:var(--highlight-gradient); 
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+      /* Responsive styling for smaller screens */
+      @media (max-width: 768px) {
+    .hero-content {
+      width: 80%;
+    }
+    .hero-content h1 {
+      font-size: 3rem;
+      margin: 0rem;
+    }
+    
+}
+
+
+/* Slides service section */
+/* Slides service section */
+/* Slides service section */
+/* Slides service section */
+
+    .services-section {
+        display: flex;
+        flex-direction: column;
+        background-color: white;
+      }
+      
+      .slide {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 50px;
+        border-bottom: 1px solid #ddd;
+      }
+      
+      .slide .content {
+        width: auto;
+      }
+      
+      .slide .content h1 {
+        font-size: 3rem;
+        color: black;
+      }
+      
+      .slide .content h2 {
+        font-size: 1.5rem;
+        color: balck;
+      }
+      
+      .slide .content p {
+        font-size: 1rem;
+        color: #333;
+      }
+      
+      .slide .btn {
+        padding: 10px 20px;
+        background-color: var(--highlight-gradient); 
+        text-decoration: none;
+        border-radius: 5px;
+      }
+      
+      .slide .image {
+        width: auto;
+        
+      }
+      
+      .slide .image img {
+        width: auto;
+        height: 40vh;
+        object-fit: cover;
+      }
+      
+      /* Responsive styling for smaller screens */
+      @media (max-width: 768px) {
+        .slide {
+          flex-direction: column;
+          text-align: center;
+        }
+      
+        .slide .content,
+        .slide .image {
+          width: 100%;
+        }
+      
+        .slide .content h1 {
+          font-size: 1.8rem;
+        }
+      
+        .slide .content h2 {
+          font-size: 1.2rem;
+        }
+      
+        .slide .content p {
+          font-size: 0.9rem;
+        }
+      }
+      
+
+/* Newsletter Section Styling */
+/* Newsletter Section Styling */
+/* Newsletter Section Styling */
+/* Newsletter Section Styling */
+.newsletter {
+    text-align: center;
+    border-radius: 12px;
+    max-width: 600px;
+    margin: 20px auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  
+  
+  .newsletter p {
+    font-size: 16px;
+    color: white;
+    margin-bottom: 20px;
+  }
+  
+  .newsletter-form {
+    display: flex;
+    justify-content: center;
+  }
+  
+  .input-group {
+    display: flex;
+    border-radius: 30px;
+    overflow: hidden;
+    background-color: #fff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .newsletter-input {
+    flex: 1;
+    padding: 10px 15px;
+    font-size: 16px;
+    border: none;
+    outline: none;
+    border-radius: 30px 0 0 30px;
+  }
+  
+  .newsletter-input::placeholder {
+    color: #aaa;
+  }
+  
+  .newsletter-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    color: #fff;
+    background-color: var(--highlight-color);
+    border: none;
+    cursor: pointer;
+    border-radius: 30px;
+    transition: background-color 0.3s ease;
+  }
+  
+  
+  /* Vlog Section */
+  /* Vlog Section */
+  /* Vlog Section */
+  /* Vlog Section */
+  .vlog {
+          width: 100vw;
+      background-color: #f9f9f9;
+      padding: 50px 0;
+      overflow: hidden; /* Ensure any overflow is hidden */
+  }
+  
+  .vlog .container {
+          display: flex;
+          flex-direction:column;
+      width: 90vw;
+      overflow-x: hidden; /* Hide horizontal overflow on the container */
+      padding: 0; /* Remove padding to avoid additional overflow */
+  }
+  
+  .vlog h2 {
+      font-size: 2rem;
+      text-align: center;
+      margin: 0;
+      padding: 0 20px; /* Add some padding to avoid text overflow */
+  }
+  
+  .vlog-list {
+      display: flex;
+      overflow-x: auto;
+      gap: 20px;
+      padding: 20px;
+      justify-content: flex-start;
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* IE and Edge */
+      box-sizing: border-box; /* Include padding in the element's width and height */
+  }
+  
+  .vlog-list::-webkit-scrollbar {
+      display: none; /* Chrome, Safari, Opera */
+  }
+  
+  .vlog-item {
+  
+      flex: 0 0 auto;
+      width: 300px;
+      background-color: #fff;
+      border-radius: 5px;
+      padding: 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s;
+      cursor: pointer;
+      z-index: 0;
+      box-sizing: border-box; /* Include padding in the element's width and height */
+  }
+  
+  .vlog-item:hover {
+      transform: translateY(-5px);
+  }
+  
+  .vlog-item img {
+      height: 25vh;
+      width: 100%;
+      border-radius: 5px;
+      object-fit: cover;
+  }
+  
+  .vlog-item .vlog-content {
+      height: 60vh;
+      overflow: hidden;
+  }
+  
+  .vlog-item h3 {
+      font-size: 1.5em;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 3; /* Number of lines to show */
+      -webkit-box-orient: vertical;
+      line-height: 1.5em; /* Height of each line */
+  }
+  
+  .vlog-item p {
+      font-size: 0.9em;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 10; /* Number of lines to show */
+      -webkit-box-orient: vertical;
+      line-height: 1.5em; /* Height of each line */
+  }
+  
+  .vlog-item .read-more {
+      color: var(--highlight-color);
+      cursor: pointer;
+  }
+  
+  .vlog-item .read-more:hover {
+      text-decoration: underline;
+  }
+  
+  
+  /* Responsive Styles- mobile and small screens  */
+  @media (max-width: 768px) {
+  .vlog h2 {
+      font-size: 1.5rem;
+      text-align: center;
+      margin: 0;
+      padding: 0 20px; /* Add some padding to avoid text overflow */
+  }
+  .vlog-item h3 {
+      font-size: 1rem;
+  }
+  }
+  
+  
+  
+  
+  
+  
+  
+   /* FAQ */
+    /* FAQ */
+     /* FAQ */
+      /* FAQ */
+  
+  .faqs_wrap_ad {
+      width: 96vw;
+      padding: 1vw;
+  }
+  
+  .faqs_wrap_ad h2 {
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 20px;
+      color: white;
+  }
+  
+  .faqs_cols_wrap {
+      display: flex;
+      gap: 20px;
+  }
+  
+  .faq_cols_lr {
+      flex: 1;
+  }
+  
+  .faq_col {
+      margin-bottom: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      overflow: hidden;
+  }
+  
+  .faq_toggle {
+      display: none;
+  }
+  
+  .faq_head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px;
+      background-color: #f7f7f7;
+      cursor: pointer;
+  }
+  
+  .faq_head h5 {
+      margin: 0;
+      font-size: 16px;
+      color: #444;
+  }
+  
+  .plus_icon::before {
+      content: '+';
+      font-size: 18px;
+      color: #888;
+      transition: transform 0.3s ease;
+  }
+  
+  .faq_toggle:checked + .faq_head .plus_icon::before {
+      content: '-';
+  }
+  
+  .faq_content {
+      max-height: 0;
+      overflow: hidden;
+      padding: 0 15px;
+      font-size: 14px;
+      color: #555;
+      transition: max-height 0.3s ease, padding 0.3s ease;
+  }
+  
+  .faq_toggle:checked ~ .faq_content {
+      max-height: 500px; /* Set a high enough max-height to accommodate content */
+      padding: 15px;
+  }
+  .custom-question {
+      background-color: #333;
+      padding: 20px;
+      border-radius: 10px;
+      color: white;
+  }
+  
+  .custom-question textarea {
+      width: 80%;
+      height: 100px;
+      padding: 10px;
+      margin-bottom: 10px;
+  }
+  
+  .custom-question button {
+      padding: 10px 20px;
+      background-color: var(--highlight-color);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+  }
+  
+  @media (max-width: 767px) {
+      
+    
+  .faqs_wrap_ad h2 {
+      text-align: center;
+      font-size: 1.5rem;
+  }
+  }
+  
+  
+  
+  
+  
+  /* Footer Section */
+  /* Footer Section */
+  /* Footer Section */
+  /* Footer Section */
+  
+  .footer {
+      height: 400px;
+      background-color: #fff;
+      color: #333;
+      width: 100%;
+      padding: 0;
+      position: relative;
+      box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      color: black;
+      padding: 20px;
+  }
+  
+  .footer-logo img {
+      display: none;
+  }
+  
+  .footer::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100vw;
+      height: 400px;
+      background-image: url('https://glimmio.com/image/bottom-logo.webp');
+      background-size: 100vw auto;
+      background-repeat: no-repeat;
+      background-position: bottom center;
+      opacity: 0.2;
+      z-index: -1; /* Add this to push the background image behind the footer content */
+  }
+  
+  
+  /* Footer Columns */
+  .footer-columns {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 20px;
+  }
+  
+  .footer-column {
+      flex: 1;
+  }
+  
+  /* Footer Links and Text */
+  .footer-heading {
+      color: #000000;
+      font-weight: bold;
+      margin-bottom: 10px;
+  }
+  
+  .footer-column a {
+      display: block;
+      color: #333;
+      text-decoration: none;
+      margin-bottom: 5px;
+  }
+  
+  .footer-column a:hover {
+      text-decoration: underline;
+  }
+  
+  /* Newsletter Form */
+  .newsletter-form-footer {
+      display: flex;
+      flex-direction: column;
+  }
+  
+  
+  
+  
+  /* Footer Contact Info */
+  .footer-contact {
+      background-color: #f8f8f8;
+      width: 100%;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-sizing: border-box;
+  }
+  
+  .contact-info {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+  }
+  
+  .contact-heading {
+      font-weight: bold;
+      margin-bottom: 10px;
+  }
+  
+  .contact-number,
+  .contact-address,
+  .contact-email {
+      margin: 5px 0;
+  }
+  
+  .contact-number a,
+  .contact-address a,
+  .contact-email a {
+      color: #000000;
+      text-decoration: none;
+  }
+  
+  .contact-number a:hover,
+  .contact-address a:hover,
+  .contact-email a:hover {
+      text-decoration: underline;
+  }
+  
+  .contact-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      text-align: right;
+  }
+  
+  /* Footer Bottom */
+  .footer-bottom {
+      background-color: #fff;
+      text-align: center;
+      width: 100%;
+      padding: 10px 0;
+  }
+  
+  .footer-bottom a {
+      color: #000;
+      text-decoration: none;
+  }
+  
+  .footer-bottom a:hover {
+      text-decoration: underline;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 992px) {
+      .footer {
+          height: auto;
+      }
+  
+      .footer-content {
+          padding: 15px;
+      }
+      .footer-contact {
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+      }
+      .contact-info {
+          flex-direction: row;
+          text-align: center;
+          align-items: center;
+      }
+  }
+  
+  
+  
+  

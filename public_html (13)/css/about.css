@@ -1,0 +1,540 @@
+
+
+body {
+    max-width: 100vw;
+    margin: 0;
+    padding: 0;
+    background-color: #000000;
+    color: #000000;
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+
+        font-family: 'Garet', sans-serif; /* Apply the Garet font */
+
+}
+
+
+:root {
+    --highlight-color: #ff4500; /* Solid orange color for text or other properties */
+}
+
+@font-face {
+    font-family: 'Garet';
+    src: url('../fonts/Garet-W05-Regular.otf') format('opentype');
+        
+
+}
+
+@font-face {
+    font-family: 'High Cruiser';
+    src: url('../fonts/HighCruiser.otf') format('opentype');
+}
+
+.btn {
+    font-family: 'High Cruiser', sans-serif;
+    background-color: transparent;
+    color: black;
+    padding: 10px 10px;
+    border: 2px solid black;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+    font-size: 0.5rem;
+    text-transform: uppercase; /* Optional: Makes text uppercase */
+    text-align: center;
+}
+
+.btn:hover {
+    background-color: transparent;
+     background: var(--highlight-gradient);  /* Apply gradient as background */
+    -webkit-background-clip: text; /* Apply background gradient to text */
+    color: var(--highlight-color);  /* Make text color transparent to see the gradient */
+    border-color: var(--highlight-color);
+   
+}
+
+#contact-now {
+    color: #fff;  /* White text color */
+    border: 2px solid white;
+
+}
+#contact-now:hover {
+    background-color: transparent;
+    background: var(--highlight-gradient);  /* Apply gradient as background */
+   -webkit-background-clip: text; /* Apply background gradient to text */
+   color: var(--highlight-color);  /* Make text color transparent to see the gradient */
+   border-color: var(--highlight-color);
+
+}
+
+
+/* Header styling */
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: #000000;
+    z-index: 1000;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    height: auto; /* Set height to auto to adapt based on content */
+}
+
+.header .container {
+    height:8vh;
+    left: 0px;
+    display: flex;
+    padding: 1vh 0; /* Add padding to top and bottom */
+}
+
+/* Hide the logo and buttons when scrolled */
+.header.hidden {
+    top: -10vh; /* Adjust this value based on your header's height */
+}
+.row.align-items-center {
+    left: 0;
+    display: flex;
+    justify-content: space-between; /* Align items to left and right edges */
+    align-items: center; /* Center items vertically */
+    padding: 1vh 1vw; /* Adds padding on left and right for margin */
+}
+.header img {
+    height: 8vh; /* Scales with viewport height */
+    width: auto;
+}
+
+
+
+
+.services {
+    width:100vw;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background-color: #ffffff;
+    position: relative;
+        text-decoration: none; /* Remove the underline */
+}
+
+.service {
+    cursor: pointer;
+    padding: 10px 20px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    color: #000000;
+    font-weight: bold;
+    text-decoration: none; /* Remove the underline */
+}
+.service a {
+    color: inherit; /* Inherit the color from the parent element */
+    text-decoration: none; /* Remove the underline */
+        display: block; /* Makes the anchor tag fill the entire div */
+}
+.service:hover {
+    background-color: var(--highlight-color);
+    color: #ffffff;
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+    .top-services {
+        font-size: 0.8rem; /* Reduces font size on small screens */
+        padding: 1vw 0.5vw;
+    }
+    .service {
+        padding: 0.3rem 0.8rem;
+    }
+}
+
+
+
+
+
+/* White horizontal line */
+/* White horizontal line */
+/* White horizontal line */
+/* White horizontal line */
+   hr.off-white-line {
+    border: none;
+    border-top: 2px solid #f5f5f5; /* Off-white color */
+    width: 95vw; /* Width of 95% of the viewport */
+    margin: 20px auto; /* Center the line horizontally */
+}
+
+/* Lead pop-up section */
+/* Lead pop-up section */
+/* Lead pop-up section */
+/* Lead pop-up section */
+.popup-overlay {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    z-index: 999; /* Ensure it's above all content */
+  }
+  
+  /* The pop-up form itself */
+  #lead-form-popup {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: auto;
+    padding: 20px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    border-radius: 8px;
+    box-sizing: border-box;
+    background-color: #000;
+   color: white;
+  }
+  /* When pop-up is active */
+.popup-active .form-header h3,
+.popup-active .form-content label,
+.popup-active .btn {
+    color: white;
+    
+}
+.popup-active .btn {
+border: 2px solid white;
+}
+  /* The close button inside the pop-up */
+  .close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+    background: transparent;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  
+
+
+/* Sticky Icon Section */
+/* Sticky Icon Section */
+/* Sticky Icon Section */
+/* Sticky Icon Section */
+.sticky-icon {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.fix-bottom-sticky-notes {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 12px;
+    padding: 10px;
+}
+
+.fix-bottom-sticky-notes a {
+    margin: 10px 0; /* Space between the icons */
+    text-decoration: none;
+    color: #fff;
+    transition: transform 0.3s ease, background-color 0.3s ease; /* Smooth transition */
+}
+
+.fix-bottom-sticky-notes a:hover {
+    transform: scale(1.1); /* Slightly enlarge icon on hover */
+}
+
+.icon-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.fix-bottom-sticky-notes i {
+    font-size: 24px;
+    color: #fff; /* Icon color */
+}
+
+.fix-bottom-sticky-notes a:first-child .icon-container {
+    background-color: #25D366; /* WhatsApp green */
+}
+
+.fix-bottom-sticky-notes a:last-child .icon-container {
+    background-color: #1DA1F2; /* Phone icon color */
+}
+
+/* Responsive Styles- mobile and small screens  */
+@media (max-width: 768px) {
+.fix-bottom-sticky-notes i {
+    font-size: 20px;
+    color: #fff; /* Icon color */
+}
+}
+
+
+
+
+
+/* General Styles */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.section-title {
+    font-size: 2.5rem;
+    text-align: center;
+    font-family: var(--heading-font);
+    margin-bottom: 30px;
+    color: var(--text-color);
+    text-transform: capitalize;
+}
+
+.highlight {
+    color: var(--highlight-color);
+    font-weight: bold;
+}
+
+/* Hero Section */
+.hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 60px 20px;
+    background: linear-gradient(to right, #fff5f0, #ffe0d8);
+    border-bottom: 2px solid var(--border-color);
+}
+
+.hero-content h1 {
+    font-size: 3rem;
+    font-family: var(--heading-font);
+    color: var(--text-color);
+    margin-bottom: 15px;
+}
+
+.hero-content p {
+    font-size: 1.2rem;
+    color: var(--secondary-color);
+    margin-bottom: 20px;
+}
+
+.cta-button {
+    background: var(--highlight-color);
+    color: white;
+    text-decoration: none;
+    padding: 12px 30px;
+    border-radius: 50px;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 1rem;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.cta-button:hover {
+    background: #e85b52;
+    transform: scale(1.05);
+    box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+.hero-image img {
+    max-width: 100%;
+    border-radius: 15px;
+}
+
+
+/* Vision and Mission */
+.vision-mission {
+    background: #f9f9f9;
+    padding: 40px 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+.vision-mission .text-content {
+    flex: 1;
+}
+.vision-mission img {
+    max-width: 100%;
+    border-radius: 10px;
+}
+
+
+
+/* Comparison Section */
+.comparison {
+    padding: 40px 20px;
+    background: #fff;
+}
+
+.comparison-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+}
+
+.column {
+    background: #f9f9f9;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-in-out;
+}
+
+.column:hover {
+    transform: translateY(-5px);
+}
+
+.column h3 {
+    font-size: 1.8rem;
+    color: var(--highlight-color);
+    margin-bottom: 15px;
+}
+
+.column ul {
+    list-style: none;
+    padding: 0;
+}
+
+.column ul li {
+    margin-bottom: 10px;
+    font-size: 1rem;
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+}
+
+.column ul li::before {
+    content: "✓";
+    color: var(--highlight-color);
+    margin-right: 10px;
+    font-weight: bold;
+}
+
+/* Promoting Minds Section */
+.promoting-minds {
+    padding: 40px 20px;
+    background: linear-gradient(to right, #e3f9ff, #f1f7ff);
+    border-bottom: 2px solid var(--border-color);
+}
+
+.promoting-minds .content {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+}
+
+.promoting-minds .text-content {
+    flex: 1;
+}
+
+.promoting-minds .text-content p {
+    font-size: 1.1rem;
+    color: var(--secondary-color);
+    margin-bottom: 20px;
+}
+
+.promoting-minds .highlights li {
+    font-size: 1rem;
+    color: var(--text-color);
+    margin-bottom: 10px;
+    position: relative;
+    padding-left: 25px;
+}
+
+.promoting-minds .highlights li::before {
+    content: "★";
+    position: absolute;
+    left: 0;
+    color: var(--highlight-color);
+    font-size: 1.2rem;
+}
+
+.form-container {
+    flex: 0.8;
+    background: #fff;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-container h3 {
+    font-size: 1.5rem;
+    color: var(--text-color);
+    margin-bottom: 20px;
+}
+
+
+
+.file-label {
+    display: block;
+    margin-bottom: 10px;
+    color: var(--text-color);
+}
+
+.submit-button {
+    background: var(--highlight-color);
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+.submit-button:hover {
+    background: #e85b52;
+    transform: translateY(-3px);
+}
+
+/* Value to Society Section */
+.value-society {
+    padding: 40px 20px;
+    background: #fff;
+}
+
+.value-points {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.value-item {
+    background: var(--background-color);
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease-in-out;
+}
+
+.value-item:hover {
+    transform: scale(1.05);
+}
+
+.value-item h3 {
+    font-size: 1.5rem;
+    color: var(--highlight-color);
+    margin-bottom: 15px;
+}
+
+.value-item ul {
+    list-style: none;
+    padding: 0;
+}
+
+.value-item ul li {
+    font-size: 1rem;
+    margin-bottom: 10px;
+    color: var(--secondary-color);
+}

@@ -6,6 +6,7 @@
     <title>Admin Dashboard</title>
     <link rel="stylesheet" href="/../css/brand-dashboard-style.css" />
     <link rel="stylesheet" href="/../css/admin-dashboard-style.css" />
+    <link rel="stylesheet" href="/../css/instagram-theme.css" />
 </head>
 <body>
     <div class="dashboard-container">

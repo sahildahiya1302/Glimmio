@@ -11,6 +11,7 @@ $role=$_SESSION['role'];
     <title>Profile</title>
     <link rel="stylesheet" href="/../css/dashboard-style.css" />
     <link rel="stylesheet" href="/../css/feed-style.css" />
+    <link rel="stylesheet" href="/../css/instagram-theme.css" />
 </head>
 <body>
 <header class="top-bar">

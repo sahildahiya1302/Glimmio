@@ -1,0 +1,57 @@
+/* Global Instagram-style theme */
+:root {
+    --ig-gradient: linear-gradient(45deg,#f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);
+    --ig-text-color: #262626;
+    --ig-link-color: #00376b;
+    --ig-border: #dbdbdb;
+    --ig-bg: #fafafa;
+}
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+body {
+    font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    background: var(--ig-bg);
+    color: var(--ig-text-color);
+}
+a {
+    color: var(--ig-link-color);
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+}
+button {
+    background: #0095f6;
+    border: none;
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+button.primary {
+    background-image: var(--ig-gradient);
+}
+input, textarea, select {
+    border: 1px solid var(--ig-border);
+    padding: 8px;
+    border-radius: 4px;
+    font-size: 14px;
+    background: #fff;
+    width: 100%;
+    margin-bottom: 10px;
+}
+header.top-nav, header.top-bar {
+    background: #fff;
+    border-bottom: 1px solid var(--ig-border);
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.logo {
+    font-weight: bold;
+    color: var(--ig-text-color);
+}

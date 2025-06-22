@@ -9,8 +9,16 @@ $role = $_SESSION['role'] ?? 'guest';
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Feed</title>
   <link rel="stylesheet" href="/../css/feed-style.css" />
+  <link rel="stylesheet" href="/../css/instagram-theme.css" />
+  <link rel="stylesheet" href="/../css/dark-theme.css" />
 </head>
 <body>
+<header class="top-nav">
+  <div class="logo">Glimmio</div>
+  <nav>
+    <button id="theme-toggle">🌙</button>
+  </nav>
+</header>
 
 <!-- FEED VIEW -->
 <section id="feed" style="display: block;" class="feed-view" role="main" aria-label="Content Feed">
@@ -32,10 +40,22 @@ $role = $_SESSION['role'] ?? 'guest';
   <div id="end-message" class="end-message" style="display:none;">🎉 You're All Caught Up</div>
 </section>
 
+<div id="comment-popup" class="comment-popup" style="display:none;">
+  <div class="popup-content">
+    <button id="close-comment-popup">X</button>
+    <div id="comments-list"></div>
+    <textarea id="comment-text" placeholder="Add a comment"></textarea>
+    <button id="send-comment">Send</button>
+  </div>
+</div>
+
 <!-- SCRIPT -->
 <script>
 const role = '<?php echo $role; ?>';
 let posts = [];
+const commentPopup = document.getElementById('comment-popup');
+const commentsList = document.getElementById('comments-list');
+const commentText = document.getElementById('comment-text');
 
 async function loadFeed() {
   const activeChip = document.querySelector('.filter-bar .chip.active');
@@ -167,12 +187,50 @@ function attachHandlers() {
       loadFeed();
     };
   });
+  document.querySelectorAll('.comment-toggle').forEach(btn => {
+    btn.onclick = () => openComments(btn.dataset.id);
+  });
   document.querySelectorAll('.cta-btn').forEach(btn => {
     btn.onclick = () => {
       alert('This action requires integration');
     };
   });
 }
+
+function openComments(id) {
+  commentPopup.dataset.postId = id;
+  commentPopup.style.display = 'flex';
+  loadComments(id);
+}
+
+async function loadComments(id) {
+  const res = await fetch('/backend/community.php?action=list_comments&post_id=' + id);
+  const data = await res.json();
+  commentsList.innerHTML = '';
+  if (data.success) {
+    data.data.forEach(c => {
+      const div = document.createElement('div');
+      div.textContent = `${c.author}: ${c.comment}`;
+      commentsList.appendChild(div);
+    });
+  }
+}
+
+document.getElementById('close-comment-popup').onclick = () => {
+  commentPopup.style.display = 'none';
+};
+
+document.getElementById('send-comment').onclick = async () => {
+  const id = commentPopup.dataset.postId;
+  const txt = commentText.value.trim();
+  if (!txt) return;
+  await fetch('/backend/community.php?action=comment', {
+    method: 'POST',
+    body: new URLSearchParams({ post_id: id, comment: txt })
+  });
+  commentText.value = '';
+  loadComments(id);
+};
 
 // Filter interaction
 document.querySelectorAll('.filter-bar .chip').forEach(chip => {
@@ -192,6 +250,14 @@ document.addEventListener('DOMContentLoaded', () => {
   // Ensure #feed section is visible
   const feedSection = document.getElementById('feed');
   if (feedSection) feedSection.style.display = 'block';
+
+  if(localStorage.getItem('theme')==='dark'){
+    document.body.classList.add('dark-mode');
+  }
+  document.getElementById('theme-toggle').addEventListener('click',()=>{
+    const dark=document.body.classList.toggle('dark-mode');
+    localStorage.setItem('theme',dark?'dark':'light');
+  });
 
   // Reset and mark "All" filter as active
   document.querySelectorAll('.chip').forEach(c => {

@@ -2,6 +2,7 @@
 require_once 'db.php';
 require_once __DIR__ . '/../includes/instagram_api.php';
 session_start();
+require_once __DIR__ . "/../includes/security.php";
 
 function respond($success, $data = null, $message = '') {
     header('Content-Type: application/json');
@@ -55,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && $action === 'profile' && $role === '
         $levels = ['bronze'=>1,'silver'=>2,'gold'=>3,'elite'=>4];
         $badgeVal = $levels[$badge] ?? 1;
 
-        $stmt = $pdo->prepare("SELECT *, FIELD(badge_min,'bronze','silver','gold','elite') as lvl FROM campaigns WHERE status='active' AND (min_followers <= ?) AND (lvl <= ? OR badge_min IS NULL) AND (category = ? OR category = '' OR category IS NULL) ORDER BY created_at DESC");
+        $stmt = $pdo->prepare("SELECT *, FIELD(badge_min,'bronze','silver','gold','elite') as lvl FROM campaigns WHERE status='active' AND (min_followers <= ?) AND (lvl <= ? OR badge_min IS NULL) AND (category = ? OR category = '' OR category IS NULL) ORDER BY created_at DESC LIMIT 50");
         $stmt->execute([$followers, $badgeVal, $category]);
         $campaigns = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -78,13 +79,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && $action === 'profile' && $role === '
 } elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && $action === 'list_requests' && $role === 'influencer') {
     // List requests made by influencer
     $user_id = $_SESSION['user_id'];
-    $stmt = $pdo->prepare('SELECT * FROM requests WHERE influencer_uid = ? ORDER BY created_at DESC');
+    $stmt = $pdo->prepare('SELECT * FROM requests WHERE influencer_uid = ? ORDER BY created_at DESC LIMIT 100');
     $stmt->execute([$user_id]);
     $requests = $stmt->fetchAll();
     respond(true, $requests);
 } elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'submit_request' && $role === 'influencer') {
     // Submit a new request with reel upload and message
     $user_id = $_SESSION['user_id'];
+    require_csrf();
     $campaign_id = $_POST['campaign_id'] ?? '';
     if (!$campaign_id) {
         respond(false, null, 'Campaign ID is required.');
@@ -94,7 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && $action === 'profile' && $role === '
 
     // Handle reel upload (optional)
     $reel_url = null;
-    if (isset($_FILES['reel']) && $_FILES['reel']['error'] === UPLOAD_ERR_OK) {
+    if (isset($_FILES['reel']) && validate_upload($_FILES['reel'], ['video/mp4','video/quicktime'])) {
         $upload_dir = __DIR__ . '/../uploads/reels/';
         if (!is_dir($upload_dir)) {
             mkdir($upload_dir, 0755, true);
@@ -105,6 +107,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && $action === 'profile' && $role === '
             respond(false, null, 'Failed to upload reel.');
         }
         $reel_url = '/uploads/reels/' . $filename;
+    } elseif (isset($_FILES['reel'])) {
+        respond(false, null, 'Invalid reel file.');
     }
 
     // Insert request

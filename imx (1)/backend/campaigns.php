@@ -33,6 +33,7 @@ function get_commission(PDO $pdo, $brandId) {
 $action = $_GET['action'] ?? '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'post_campaign') {
+    require_csrf();
     // Handle campaign posting
     $brand_id = $_SESSION['user_id'];
 
@@ -44,10 +45,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'post_campaign') {
         respond(false, null, 'Wallet not found.');
     }
     // Validate inputs
-    $title = trim($_POST['title'] ?? '');
-    $objective = trim($_POST['objective'] ?? '');
-    $description = trim($_POST['description'] ?? '');
-    $category = trim($_POST['category'] ?? '');
+    $title = sanitize_text("title");
+    $objective = sanitize_text("objective");
+    $description = sanitize_text("description");
+    $category = sanitize_text("category");
     $start_date = $_POST['start_date'] ?? '';
     $end_date = $_POST['end_date'] ?? '';
     $goal_type = $_POST['goal_type'] ?? '';
@@ -73,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'post_campaign') {
 
     // Handle image upload if exists
     $image_url = null;
-    if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+    if (isset($_FILES['image']) && validate_upload($_FILES['image'], ['image/jpeg','image/png','image/gif'])) {
         $upload_dir = __DIR__ . '/../uploads/campaigns/';
         if (!is_dir($upload_dir)) {
             mkdir($upload_dir, 0755, true);
@@ -81,11 +82,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'post_campaign') {
         $filename = uniqid() . '_' . basename($_FILES['image']['name']);
         $target_file = $upload_dir . $filename;
         if (move_uploaded_file($_FILES['image']['tmp_name'], $target_file)) {
-            // Assuming your web server serves /uploads/ from the root
             $image_url = '/uploads/campaigns/' . $filename;
         } else {
             respond(false, null, 'Failed to upload image.');
         }
+    } elseif (isset($_FILES['image'])) {
+        respond(false, null, 'Invalid image uploaded.');
     }
 
     // Insert campaign into database
@@ -117,7 +119,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'post_campaign') {
 
         // Handle creative brief data
         $brief_file_url = null;
-        if (isset($_FILES['brief_file']) && $_FILES['brief_file']['error'] === UPLOAD_ERR_OK) {
+        if (isset($_FILES['brief_file']) && validate_upload($_FILES['brief_file'], ['application/pdf','image/jpeg','image/png'])) {
             $brief_dir = __DIR__ . '/../uploads/campaigns/';
             if (!is_dir($brief_dir)) {
                 mkdir($brief_dir, 0755, true);
@@ -127,6 +129,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'post_campaign') {
             if (move_uploaded_file($_FILES['brief_file']['tmp_name'], $btarget)) {
                 $brief_file_url = '/uploads/campaigns/' . $bfname;
             }
+        } elseif (isset($_FILES['brief_file'])) {
+            respond(false, null, 'Invalid brief file.');
         }
 
         $guidelines = $_POST['guidelines'] ?? null;
@@ -159,6 +163,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'post_campaign') {
         respond(false, null, 'Failed to post campaign.');
     }
 } elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'end_campaign') {
+    require_csrf();
     $campaign_id = $_POST['campaign_id'] ?? '';
     if (!$campaign_id) {
         respond(false, null, 'Campaign ID missing');
@@ -180,7 +185,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'post_campaign') {
 } elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && $action === 'list_campaigns') {
     // List campaigns for logged in brand
     $brand_id = $_SESSION['user_id'];
-    $stmt = $pdo->prepare('SELECT * FROM campaigns WHERE brand_id = ? ORDER BY created_at DESC');
+    $stmt = $pdo->prepare('SELECT * FROM campaigns WHERE brand_id = ? ORDER BY created_at DESC LIMIT 100');
     $stmt->execute([$brand_id]);
     $campaigns = $stmt->fetchAll();
     respond(true, $campaigns);

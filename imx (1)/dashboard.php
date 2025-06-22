@@ -13,6 +13,8 @@ session_start();
     <link rel="stylesheet" href="/../css/brand-dashboard-style.css" />
     <link rel="stylesheet" href="/../css/influencer-dashboard-style.css" />
     <link rel="stylesheet" href="/../css/feed-style.css" />
+    <link rel="stylesheet" href="/../css/instagram-theme.css" />
+    <link rel="stylesheet" href="/../css/dark-theme.css" />
     <style>
         .nav-tabs {
             position: fixed;
@@ -73,6 +75,7 @@ session_start();
     <div class="logo">Glimmio</div>
     <div id="page-title">Feed</div>
     <div class="top-icons">
+        <button id="theme-toggle" style="background:none;border:none;cursor:pointer">🌙</button>
         <a href="#" id="notif-btn">🔔</a>
         <a href="pages/dm.php">✉️</a>
     </div>
@@ -260,6 +263,13 @@ document.addEventListener('DOMContentLoaded',()=>{
         e.preventDefault();
         showPostForm();
     };
+    if(localStorage.getItem('theme')==='dark'){
+        document.body.classList.add('dark-mode');
+    }
+    document.getElementById('theme-toggle').addEventListener('click',()=>{
+        const dark=document.body.classList.toggle('dark-mode');
+        localStorage.setItem('theme',dark?'dark':'light');
+    });
 });
 </script>
 </body>

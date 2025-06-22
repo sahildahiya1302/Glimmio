@@ -5,9 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Brand Dashboard</title>
     <link rel="stylesheet" href="/../css/brand-dashboard-style.css" />
+    <link rel="stylesheet" href="/../css/instagram-theme.css" />
+    <link rel="stylesheet" href="/../css/dark-theme.css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+    <header class="top-nav">
+        <div class="logo">Glimmio</div>
+        <nav>
+            <button id="theme-toggle">🌙</button>
+            <a href="feed.php" class="home-link"><i class="fas fa-home"></i></a>
+            <a href="../pages/login.html" class="logout-link">Logout</a>
+        </nav>
+    </header>
     <div class="dashboard-container">
         <div class="sidebar">
             <h2>Brand Dashboard</h2>
@@ -126,6 +136,8 @@
     </div>
 
     <script>
+        let csrfToken = '';
+        fetch('/backend/auth.php?action=csrf').then(r=>r.json()).then(d=>{csrfToken=d.token;});
         // Load profile data from backend API
         async function loadProfile() {
             try {
@@ -153,6 +165,7 @@
             try {
                 const response = await fetch('/backend/campaigns.php?action=post_campaign', {
                     method: 'POST',
+                    headers: {'X-CSRF-Token': csrfToken},
                     body: formData,
                 });
                 const result = await response.json();
@@ -307,6 +320,7 @@
 
                 const response = await fetch('/backend/requests.php?action=update_request_status', {
                     method: 'POST',
+                    headers: {'X-CSRF-Token': csrfToken},
                     body: formData,
                 });
                 const result = await response.json();
@@ -328,6 +342,7 @@
 
                 const response = await fetch('/backend/campaigns.php?action=end_campaign', {
                     method: 'POST',
+                    headers: {'X-CSRF-Token': csrfToken},
                     body: formData,
                 });
                 const result = await response.json();
@@ -389,6 +404,7 @@
             formData.append('status', status);
             const response = await fetch('/backend/submissions.php?action=update', {
                 method: 'POST',
+                    headers: {'X-CSRF-Token': csrfToken},
                 body: formData,
             });
             const result = await response.json();
@@ -405,7 +421,7 @@
             ul.innerHTML='';
             if(data.success){
                 data.data.forEach(p=>{const li=document.createElement('li');li.innerHTML=`<strong>${p.author}</strong>: ${p.content} <button class="like-btn" data-id="${p.id}">❤ ${p.like_count||0}</button>`;ul.appendChild(li);});
-                document.querySelectorAll('.like-btn').forEach(btn=>{btn.onclick=async()=>{const r=await fetch('/backend/community.php?action=like',{method:'POST',body:new URLSearchParams({post_id:btn.dataset.id})});const d=await r.json();if(d.success) loadForum();};});
+                document.querySelectorAll('.like-btn').forEach(btn=>{btn.onclick=async()=>{const r=await fetch('/backend/community.php?action=like',{method:'POST',headers:{'X-CSRF-Token': csrfToken},headers:{'X-CSRF-Token': csrfToken},body:new URLSearchParams({post_id:btn.dataset.id})});const d=await r.json();if(d.success) loadForum();};});
             }
         }
 
@@ -424,7 +440,7 @@
             const amt=parseFloat(document.getElementById('add-funds-amt').value||0);
             if(!amt){alert('Amount required');return;}
             const fd=new FormData();fd.append('amount',amt);
-            const r=await fetch('/backend/wallet.php?action=add_funds',{method:'POST',body:fd});
+            const r=await fetch('/backend/wallet.php?action=add_funds',{method:'POST',headers:{'X-CSRF-Token': csrfToken},body:fd});
             const d=await r.json();alert(d.message);if(d.success) loadWallet();
         });
 
@@ -432,7 +448,7 @@
             e.preventDefault();
             const content=document.getElementById('forum-content').value;
             const fd=new FormData();fd.append('content',content);
-            const res=await fetch('/backend/community.php?action=post',{method:'POST',body:fd});
+            const res=await fetch('/backend/community.php?action=post',{method:'POST',headers:{'X-CSRF-Token': csrfToken},body:fd});
             const d=await res.json();
             if(d.success){document.getElementById('forum-content').value='';loadForum();}else alert(d.message);
         });
@@ -464,6 +480,9 @@
             loadSubmissions();
             loadForum();
             loadWallet();
+            if(localStorage.getItem('theme')==='dark'){
+                document.body.classList.add('dark-mode');
+            }
 
             const links = document.querySelectorAll('.sidebar ul li a');
             const sections = document.querySelectorAll('.main-content section');
@@ -477,6 +496,11 @@
             });
             sections.forEach(sec => sec.style.display = 'none');
             document.getElementById('post-campaign').style.display = 'block';
+        });
+
+        document.getElementById('theme-toggle').addEventListener('click', () => {
+            const dark = document.body.classList.toggle('dark-mode');
+            localStorage.setItem('theme', dark ? 'dark' : 'light');
         });
     </script>
 </body>

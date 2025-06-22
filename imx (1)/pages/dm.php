@@ -9,6 +9,7 @@ if(!isset($_SESSION['user_id'])){header('Location: login.html');exit;}
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Direct Messages</title>
 <link rel="stylesheet" href="/../css/feed-style.css" />
+<link rel="stylesheet" href="/../css/instagram-theme.css" />
 </head>
 <body>
 <div class="feed-container">

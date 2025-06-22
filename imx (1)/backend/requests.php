@@ -1,6 +1,7 @@
 <?php
 require_once 'db.php';
 session_start();
+require_once __DIR__ . "/../includes/security.php";
 
 function respond($success, $data = null, $message = '') {
     header('Content-Type: application/json');
@@ -38,12 +39,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && $action === 'list_requests') {
 
     // Get requests for these campaigns
     $inQuery = implode(',', array_fill(0, count($campaigns), '?'));
-    $stmt = $pdo->prepare("SELECT * FROM requests WHERE campaign_id IN ($inQuery) ORDER BY created_at DESC");
+    $stmt = $pdo->prepare("SELECT * FROM requests WHERE campaign_id IN ($inQuery) ORDER BY created_at DESC LIMIT 100");
     $stmt->execute($campaigns);
     $requests = $stmt->fetchAll();
 
     respond(true, $requests);
 } elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'update_request_status') {
+    require_csrf();
     // Accept or reject a request
     $request_id = $_POST['request_id'] ?? '';
     $status = $_POST['status'] ?? '';
@@ -67,6 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && $action === 'list_requests') {
         respond(false, null, 'Failed to update request status.');
     }
 } elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'invite') {
+    require_csrf();
     if (($_SESSION['role'] ?? '') !== 'brand') {
         respond(false, null, 'Unauthorized');
     }

@@ -32,3 +32,44 @@ body.dark {
 .dark input,.dark textarea,.dark select{background:#333;color:#eee;border:1px solid #555;}
 .tags{color:#3897f0;margin-bottom:4px;}
 .dark .feed-container{background:#1e1e1e;border-color:#333;}
+
+.bottom-nav{
+    position:fixed;
+    bottom:0;
+    left:0;
+    width:100%;
+    display:flex;
+    justify-content:space-around;
+    background:#fff;
+    border-top:1px solid #dbdbdb;
+    padding:8px 0;
+}
+.bottom-nav a,.bottom-nav button{
+    background:none;
+    border:none;
+    color:#333;
+    font-size:24px;
+    text-decoration:none;
+}
+body.dark .bottom-nav{background:#1e1e1e;border-color:#333;}
+body.dark .bottom-nav a,body.dark .bottom-nav button{color:#eee;}
+
+.post-modal{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.6);
+    display:none;
+    align-items:center;
+    justify-content:center;
+}
+.post-modal .modal-content{
+    background:#fff;
+    padding:20px;
+    border-radius:8px;
+    width:90%;
+    max-width:400px;
+}
+body.dark .post-modal .modal-content{background:#1e1e1e;color:#eee;}

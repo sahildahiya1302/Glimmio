@@ -10,29 +10,34 @@ if(!isset($_SESSION['user_id'])){
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Community Feed</title>
+    <title>Feed</title>
     <link rel="stylesheet" href="/../css/feed-style.css" />
 </head>
 <body>
     <div class="feed-container">
-        <h2>Community Feed</h2>
+        <h2>Feed</h2>
         <button id="theme-toggle">Dark</button>
-        <form id="post-form" enctype="multipart/form-data">
-            <textarea id="post-content" placeholder="Share something" required></textarea>
-            <input type="file" id="post-image" name="image" />
-            <select id="filter">
-                <option value="">No Filter</option>
-                <option value="grayscale(1)">Grayscale</option>
-                <option value="sepia(1)">Sepia</option>
-            </select>
-            <input type="text" id="tags" placeholder="tag1,tag2" />
-            <input type="datetime-local" id="scheduled_at" />
-            <input type="datetime-local" id="expires_at" />
-            <input type="text" id="poll-question" placeholder="Poll question" />
-            <input type="text" id="poll-options" placeholder="Option1|Option2" />
-            <button type="submit">Post</button>
-        </form>
         <ul id="feed-list"></ul>
+    </div>
+    <div id="post-modal" class="post-modal" style="display:none;">
+        <div class="modal-content">
+            <form id="post-form" enctype="multipart/form-data">
+                <textarea id="post-content" placeholder="Share something" required></textarea>
+                <input type="file" id="post-image" name="image" />
+                <select id="filter">
+                    <option value="">No Filter</option>
+                    <option value="grayscale(1)">Grayscale</option>
+                    <option value="sepia(1)">Sepia</option>
+                </select>
+                <input type="text" id="tags" placeholder="tag1,tag2" />
+                <input type="datetime-local" id="scheduled_at" />
+                <input type="datetime-local" id="expires_at" />
+                <input type="text" id="poll-question" placeholder="Poll question" />
+                <input type="text" id="poll-options" placeholder="Option1|Option2" />
+                <button type="submit">Post</button>
+                <button type="button" id="close-modal">Cancel</button>
+            </form>
+        </div>
     </div>
 
 <script>
@@ -79,9 +84,21 @@ async function loadFeed(){
 
 document.addEventListener('DOMContentLoaded',loadFeed);
 
+document.getElementById('close-modal').addEventListener('click',()=>{
+    document.getElementById('post-modal').style.display='none';
+});
+
 document.getElementById('theme-toggle').addEventListener('click',()=>{
     document.body.classList.toggle('dark');
     document.getElementById('theme-toggle').textContent=document.body.classList.contains('dark')?'Light':'Dark';
+});
+
+function openPostModal(){
+    document.getElementById('post-modal').style.display='flex';
+}
+
+document.getElementById('close-modal').addEventListener('click',()=>{
+    document.getElementById('post-modal').style.display='none';
 });
 
 document.getElementById('post-form').addEventListener('submit',async e=>{
@@ -97,6 +114,7 @@ document.getElementById('post-form').addEventListener('submit',async e=>{
     fd.append('poll_options',document.getElementById('poll-options').value);
     await fetch('/backend/community.php?action=post',{method:'POST',body:fd});
     document.getElementById('post-form').reset();
+    document.getElementById('post-modal').style.display='none';
     loadFeed();
 });
 </script>

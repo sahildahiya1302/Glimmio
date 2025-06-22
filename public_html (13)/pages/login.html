@@ -81,6 +81,10 @@
 
     <script>
         let csrfToken = '';
+        let oauthConfig = null;
+        fetch('/backend/config.php')
+            .then(r => r.json())
+            .then(d => { oauthConfig = d; });
         fetch('/backend/auth.php?action=csrf')
             .then(r => r.json())
             .then(d => {
@@ -218,14 +222,18 @@
             });
             const result = await response.json();
             alert(result.message);
-            if (result.success) {
+            if (result.success && oauthConfig) {
                 influencerModal.style.display = 'none';
                 // Redirect to Instagram OAuth to fetch profile
+                const scopes = 'pages_user_timezone,instagram_branded_content_creator,instagram_branded_content_brand,instagram_manage_events,instagram_business_basic,instagram_business_manage_messages,instagram_business_content_publish,instagram_business_manage_insights,instagram_business_manage_comments,pages_read_engagement,ads_management,instagram_content_publish,instagram_manage_comments';
                 window.location.href = 'https://api.instagram.com/oauth/authorize?client_id=' +
-                    encodeURIComponent('YOUR_INSTAGRAM_CLIENT_ID') +
-                    '&redirect_uri=https://glimmio.com/instagram-callback.php&scope=user_profile&response_type=code';
+                    encodeURIComponent(oauthConfig.instagramClientId) +
+                    '&redirect_uri=' + encodeURIComponent(oauthConfig.instagramRedirect) +
+                    '&scope=' + encodeURIComponent(scopes) +
+                    '&response_type=code';
             }
         });
     </script>
+    <script src="/js/pixel.js"></script>
 </body>
 </html>

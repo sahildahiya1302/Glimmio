@@ -2,6 +2,7 @@
 require_once 'db.php';
 require_once __DIR__ . '/../includes/csrf.php';
 require_once __DIR__ . '/../includes/jwt_helper.php';
+require_once __DIR__ . '/../includes/env.php';
 session_start();
 
 function respond($success, $message, $redirect = null, array $extra = []) {
@@ -24,15 +25,8 @@ try {
         $action = $_POST['action'] ?? '';
         $action = $_POST['action'] ?? '';
 
-        // Load environment variables from .env
-        if (file_exists(__DIR__ . '/../.env')) {
-            $lines = file(__DIR__ . '/../.env', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-            foreach ($lines as $line) {
-                if (strpos(trim($line), '#') === 0) continue;
-                list($name, $value) = explode('=', $line, 2);
-                $_ENV[$name] = $value;
-            }
-        }
+        // Load environment variables
+        env('JWT_SECRET'); // ensures .env is parsed
 
         $pdo = db_connect();
 
@@ -91,7 +85,7 @@ try {
                     'uid' => $user['id'],
                     'role' => 'brand',
                     'exp' => time() + 3600
-                ], $_ENV['JWT_SECRET'] ?? 'secret');
+                ], env('JWT_SECRET', 'secret'));
                 respond(true, 'Login successful.', 'brand-dashboard.php', ['token' => $token]);
             }
 
@@ -106,7 +100,7 @@ try {
                     'uid' => $user['id'],
                     'role' => 'influencer',
                     'exp' => time() + 3600
-                ], $_ENV['JWT_SECRET'] ?? 'secret');
+                ], env('JWT_SECRET', 'secret'));
                 respond(true, 'Login successful.', 'influencer-dashboard.php', ['token' => $token]);
             }
 

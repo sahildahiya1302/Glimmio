@@ -211,3 +211,17 @@ CREATE TABLE IF NOT EXISTS attribution_summary (
     FOREIGN KEY (campaign_id) REFERENCES campaigns(id) ON DELETE CASCADE,
     FOREIGN KEY (submission_id) REFERENCES content_submissions(id) ON DELETE CASCADE
 );
+
+-- Pixel tracking events
+CREATE TABLE IF NOT EXISTS pixel_events (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    event_type VARCHAR(50) NOT NULL,
+    utm_source VARCHAR(100) DEFAULT NULL,
+    utm_medium VARCHAR(100) DEFAULT NULL,
+    utm_campaign VARCHAR(100) DEFAULT NULL,
+    utm_content VARCHAR(100) DEFAULT NULL,
+    utm_term VARCHAR(100) DEFAULT NULL,
+    ip_address VARCHAR(45) DEFAULT NULL,
+    user_agent TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

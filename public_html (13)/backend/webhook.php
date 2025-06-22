@@ -1,6 +1,7 @@
 <?php
+require_once __DIR__ . '/../includes/env.php';
 // Your verify token
-$VERIFY_TOKEN = getenv('INSTAGRAM_VERIFY_TOKEN') ?: 'glimmio_secure_token';
+$VERIFY_TOKEN = env('INSTAGRAM_VERIFY_TOKEN', 'glimmio_secure_token');
 
 // Handle GET requests for verification
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {

@@ -36,19 +36,14 @@ if ($role !== 'brand' && $role !== 'influencer') {
     respond(false, 'Invalid role in state.');
 }
 
-// Load environment variables for Meta OAuth
-if (file_exists(__DIR__ . '/../.env')) {
-    $lines = file(__DIR__ . '/../.env', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-    foreach ($lines as $line) {
-        if (strpos(trim($line), '#') === 0) continue;
-        list($name, $value) = explode('=', $line, 2);
-        $_ENV[$name] = $value;
-    }
-}
+require_once __DIR__ . '/../includes/env.php';
 
-$client_id = $_ENV['META_APP_ID'] ?? '';
-$client_secret = $_ENV['META_APP_SECRET'] ?? '';
-$redirect_uri = $_ENV['META_REDIRECT_URI'] ?? '';
+// Load environment variables for Meta OAuth
+env('META_APP_ID');
+
+$client_id = env('META_APP_ID');
+$client_secret = env('META_APP_SECRET');
+$redirect_uri = env('META_REDIRECT_URI');
 
 if (!$client_id || !$client_secret || !$redirect_uri) {
     respond(false, 'OAuth configuration missing.');

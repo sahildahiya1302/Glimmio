@@ -1,14 +1,15 @@
 <?php
 require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/../includes/instagram_api.php';
+require_once __DIR__ . '/../includes/env.php';
 header('Content-Type: application/json');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $input = json_decode(file_get_contents('php://input'), true);
 
-    $client_id = getenv('INSTAGRAM_CLIENT_ID');
-    $client_secret = getenv('INSTAGRAM_CLIENT_SECRET');
-    $redirect_uri = 'https://glimmio.com/instagram-callback.php';
+    $client_id = env('INSTAGRAM_CLIENT_ID');
+    $client_secret = env('INSTAGRAM_CLIENT_SECRET');
+    $redirect_uri = env('INSTAGRAM_REDIRECT_URI');
     $code = $input['code'] ?? null;
 
     if (!$code) {

@@ -1,9 +1,10 @@
 <?php
 require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/../includes/env.php';
 
-$clientId = getenv('INSTAGRAM_CLIENT_ID');
-$clientSecret = getenv('INSTAGRAM_CLIENT_SECRET');
-$redirectUri = 'https://glimmio.com/instagram-callback.php';
+$clientId = env('INSTAGRAM_CLIENT_ID');
+$clientSecret = env('INSTAGRAM_CLIENT_SECRET');
+$redirectUri = env('INSTAGRAM_REDIRECT_URI');
 
 if (isset($_GET['code'])) {
     $code = $_GET['code'];

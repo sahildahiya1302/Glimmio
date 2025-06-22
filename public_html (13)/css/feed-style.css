@@ -3,6 +3,10 @@ body {
     font-family: 'Arial', sans-serif;
     background: #fafafa;
 }
+body.dark {
+    background:#121212;
+    color:#eee;
+}
 .feed-container {
     max-width:500px;
     margin:40px auto;
@@ -24,3 +28,7 @@ body {
     cursor:pointer;
     float:right;
 }
+.dark .like-btn{color:#ff6699;}
+.dark input,.dark textarea,.dark select{background:#333;color:#eee;border:1px solid #555;}
+.tags{color:#3897f0;margin-bottom:4px;}
+.dark .feed-container{background:#1e1e1e;border-color:#333;}

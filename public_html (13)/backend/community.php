@@ -12,7 +12,7 @@ $pdo=db_connect();
 $action=$_GET['action'] ?? 'list';
 
 if($action==='list'){
-    $stmt=$pdo->query('SELECT cp.*, IF(cp.role="brand",b.company_name,i.username) AS author, cp.like_count, cp.share_count, cp.save_count, cp.comment_count FROM community_posts cp LEFT JOIN brands b ON cp.role="brand" AND cp.author_id=b.id LEFT JOIN influencers i ON cp.role="influencer" AND cp.author_id=i.id ORDER BY cp.created_at DESC LIMIT 50');
+    $stmt=$pdo->query('SELECT cp.*, IF(cp.role="brand",b.company_name,i.username) AS author, cp.like_count, cp.share_count, cp.save_count, cp.comment_count FROM community_posts cp LEFT JOIN brands b ON cp.role="brand" AND cp.author_id=b.id LEFT JOIN influencers i ON cp.role="influencer" AND cp.author_id=i.id WHERE cp.scheduled_at<=NOW() AND (cp.expires_at IS NULL OR cp.expires_at>NOW()) ORDER BY cp.created_at DESC LIMIT 50');
     $posts=$stmt->fetchAll(PDO::FETCH_ASSOC);
     foreach($posts as &$p){
         if($p['poll_options']){
@@ -24,6 +24,9 @@ if($action==='list'){
                 $res[]=['option'=>$o,'votes'=>$c->fetchColumn()];
             }
             $p['poll_results']=$res;
+        }
+        if($p['tags']){
+            $p['tags']=explode(',', $p['tags']);
         }
     }
     respond(true,$posts);
@@ -41,8 +44,12 @@ if($action==='post' && $_SERVER['REQUEST_METHOD']==='POST'){
     }
     $pollQ=trim($_POST['poll_question'] ?? '');
     $pollOpts=$_POST['poll_options'] ?? '';
-    $stmt=$pdo->prepare('INSERT INTO community_posts (author_id,role,content,image_url,poll_question,poll_options) VALUES (?,?,?,?,?,?)');
-    $stmt->execute([$_SESSION['user_id'], $_SESSION['role'], $content,$imgUrl,$pollQ,$pollOpts]);
+    $tags=trim($_POST['tags'] ?? '');
+    $filter=trim($_POST['filter'] ?? '');
+    $sched=$_POST['scheduled_at'] ?? date('Y-m-d H:i:s');
+    $expires=$_POST['expires_at'] ?? null;
+    $stmt=$pdo->prepare('INSERT INTO community_posts (author_id,role,content,image_url,poll_question,poll_options,tags,filter,scheduled_at,expires_at) VALUES (?,?,?,?,?,?,?,?,?,?)');
+    $stmt->execute([$_SESSION['user_id'], $_SESSION['role'], $content,$imgUrl,$pollQ,$pollOpts,$tags,$filter,$sched,$expires]);
     respond(true,null,'Posted');
 }
 

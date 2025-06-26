@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const selectInfluencerBtn = document.getElementById('select-influencer');
     const loginForm = document.getElementById('login-form-container');
     const registerForm = document.getElementById('register-form-container');
-    const showLoginLink = document.getElementById('show-login');
+    const showLoginLinks = document.querySelectorAll('.show-login');
 
     openRegisterBtn.onclick = () => {
         loginForm.style.display = 'none';
@@ -55,13 +55,15 @@ document.addEventListener('DOMContentLoaded', () => {
         influencerModal.style.display = 'block';
     };
 
-    showLoginLink.onclick = (e) => {
-        e.preventDefault();
-        brandModal.style.display = 'none';
-        influencerModal.style.display = 'none';
-        userTypeModal.style.display = 'none';
-        loginForm.style.display = 'block';
-    };
+    showLoginLinks.forEach(link => {
+        link.addEventListener('click', e => {
+            e.preventDefault();
+            brandModal.style.display = 'none';
+            influencerModal.style.display = 'none';
+            userTypeModal.style.display = 'none';
+            loginForm.style.display = 'block';
+        });
+    });
 
     window.onclick = function(event) {
         if (event.target === brandModal) {

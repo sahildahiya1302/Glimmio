@@ -1,7 +1,7 @@
 <?php
 require_once 'db.php';
-session_start();
-require_once __DIR__ . "/../includes/security.php";
+require_once __DIR__ . '/../includes/security.php';
+secure_session_start();
 
 function respond($success, $data = null, $message = '') {
     header('Content-Type: application/json');
@@ -30,6 +30,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && $action === 'profile') {
     $stmt = $pdo->prepare('SELECT id, name AS company_name, email, profile_pic AS logo_url, gstin, industry, website FROM brands WHERE id = ?');
     $stmt->execute([$user_id]);
     $profile = $stmt->fetch();
+    if ($profile && empty($profile['company_name'])) {
+        $profile['company_name'] = explode('@', $profile['email'])[0];
+    }
     if ($profile) {
         respond(true, $profile);
     } else {

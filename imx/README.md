@@ -90,6 +90,29 @@ Brands post campaigns via `/backend/campaigns.php`. Influencers view eligible ca
 
 The shared `css/instagram-theme.css` stylesheet gives the interface an Instagram-inspired design. Users can enable dark mode via `css/dark-theme.css` using the new toggle button in each header.
 
+## Profile Editing
+
+Users can now update their username, bio, category and payout details from the new `pages/profile-edit.php` screen. Profile pictures may be uploaded and are stored under `uploads/influencers/` or `uploads/brands/` depending on role.
+
+## Instagram API Caching
+
+To minimise calls to Instagram and improve performance, API requests now use a simple file based cache in the new `cache/` directory. Helper functions in `includes/instagram_api.php` provide profile, insights and top media data with a short TTL. Endpoints can request cached data via `/backend/influencer.php?action=top_media`.
+
+## Badge Rates
+
+Influencer payouts for CPM campaigns depend on their badge level. Default values
+are stored in the `badge_rates` table and can be updated through
+`/backend/admin.php?action=set_badge_rate`.
+
+## Campaign Projections
+
+Brands can retrieve projected results for their campaigns using
+`/backend/metrics.php?action=projections&campaign_id=ID`. The response
+includes the current metric total, an estimate of final results based on
+progress and the campaign timeline, as well as a short suggestion if the
+projection is below the target metrics. The brand dashboard visualises this
+data with an additional chart under the analytics tab.
+
 ## Development
 
 To install PHP dependencies, run `composer install` inside this directory. Ensure a MySQL server is available and load `schema.sql` to create tables.

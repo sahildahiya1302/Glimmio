@@ -1,3 +1,12 @@
+<?php
+require_once __DIR__ . '/../includes/security.php';
+secure_session_start();
+secure_page_headers();
+if(!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin'){
+    header('Location: login.html');
+    exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>

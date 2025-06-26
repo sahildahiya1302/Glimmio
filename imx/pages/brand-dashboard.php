@@ -1,3 +1,12 @@
+<?php
+require_once __DIR__ . '/../includes/security.php';
+secure_session_start();
+secure_page_headers();
+if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'brand') {
+    header('Location: login.html');
+    exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -122,6 +131,9 @@
                 <h3>Performance Analytics</h3>
                 <select id="analytics-campaign"></select>
                 <canvas id="brandChart"></canvas>
+                <h4>Projections</h4>
+                <canvas id="projectionChart" height="100"></canvas>
+                <p id="projection-suggestion"></p>
             </section>
 
             <section id="forum" style="display:none;">
@@ -454,6 +466,7 @@
         });
 
         let chart;
+        let projChart;
         async function loadAnalytics() {
             const sel = document.getElementById('analytics-campaign');
             const campaignId = sel.value || '';
@@ -470,6 +483,28 @@
             } else {
                 chart.data.datasets[0].data = vals;
                 chart.update();
+            }
+
+            // fetch projections
+            let purl = '/backend/metrics.php?action=projections';
+            if (campaignId) purl += '&campaign_id=' + encodeURIComponent(campaignId);
+            const pres = await fetch(purl);
+            const pdata = await pres.json();
+            const div = document.getElementById('projection-suggestion');
+            if (pdata.success && pdata.data) {
+                const pr = pdata.data;
+                div.textContent = pr.suggestion;
+                const pctx = document.getElementById('projectionChart').getContext('2d');
+                const pvals = [pr.current, pr.projected, pr.target||0];
+                const labels = ['Current','Projected','Target'];
+                if (!projChart) {
+                    projChart = new Chart(pctx, {type:'bar',data:{labels:labels,datasets:[{label:'Metrics',backgroundColor:'#0094FF',data:pvals}]}});
+                } else {
+                    projChart.data.datasets[0].data = pvals;
+                    projChart.update();
+                }
+            } else {
+                div.textContent = 'No projection data';
             }
         }
 

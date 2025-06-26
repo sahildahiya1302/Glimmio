@@ -213,6 +213,19 @@ CREATE TABLE IF NOT EXISTS attribution_summary (
     FOREIGN KEY (submission_id) REFERENCES content_submissions(id) ON DELETE CASCADE
 );
 
+-- Default CPM payout rates per badge level
+CREATE TABLE IF NOT EXISTS badge_rates (
+    badge_level ENUM('bronze','silver','gold','elite') PRIMARY KEY,
+    cpm_rate DECIMAL(6,2) NOT NULL
+);
+
+INSERT INTO badge_rates (badge_level, cpm_rate) VALUES
+    ('bronze', 0.50),
+    ('silver', 0.60),
+    ('gold',   0.65),
+    ('elite',  0.75)
+ON DUPLICATE KEY UPDATE cpm_rate=VALUES(cpm_rate);
+
 -- Pixel tracking events
 CREATE TABLE IF NOT EXISTS pixel_events (
     id INT AUTO_INCREMENT PRIMARY KEY,

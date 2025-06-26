@@ -18,6 +18,17 @@ if (!isset($_SESSION['user_id'])) {
 $pdo = db_connect();
 $action = $_GET['action'] ?? '';
 
+function badge_rate(PDO $pdo, string $badge): float {
+    $stmt = $pdo->prepare('SELECT cpm_rate FROM badge_rates WHERE badge_level=?');
+    $stmt->execute([$badge]);
+    $r = $stmt->fetchColumn();
+    if ($r === false) {
+        $def = ['bronze'=>0.50,'silver'=>0.60,'gold'=>0.65,'elite'=>0.75];
+        return $def[$badge] ?? 0.50;
+    }
+    return floatval($r);
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'complete_profile') {
     $role = $_POST['role'] ?? '';
     $userId = $_SESSION['user_id'];
@@ -121,8 +132,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'complete_profile') {
     $role = $_SESSION['role'];
     $user = $_SESSION['user_id'];
     $checkSql = $role==='brand'
-        ? 'SELECT cs.id,c.rate,c.goal_type FROM content_submissions cs JOIN campaigns c ON cs.campaign_id=c.id WHERE cs.id=? AND c.brand_id=?'
-        : 'SELECT cs.id,c.rate,c.goal_type FROM content_submissions cs JOIN campaigns c ON cs.campaign_id=c.id WHERE cs.id=? AND cs.influencer_id=?';
+        ? 'SELECT cs.id,c.rate,c.goal_type,i.badge_level FROM content_submissions cs JOIN campaigns c ON cs.campaign_id=c.id JOIN influencers i ON cs.influencer_id=i.id WHERE cs.id=? AND c.brand_id=?'
+        : 'SELECT cs.id,c.rate,c.goal_type,i.badge_level FROM content_submissions cs JOIN campaigns c ON cs.campaign_id=c.id JOIN influencers i ON cs.influencer_id=i.id WHERE cs.id=? AND cs.influencer_id=?';
     $stmt=$pdo->prepare($checkSql);
     $stmt->execute([$subId,$user]);
     $row=$stmt->fetch(PDO::FETCH_ASSOC);
@@ -134,12 +145,58 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'complete_profile') {
     $earn=0;
     if($metrics){
         if($row['goal_type']=='CPM'){
-            $earn=($metrics['impressions']/1000)*$row['rate'];
+            $rate = badge_rate($pdo, $row['badge_level'] ?? 'bronze');
+            $earn = ($metrics['impressions']/1000) * $rate;
         }else{
-            $earn=$metrics['engagement_total']*$row['rate'];
+            $earn = $metrics['engagement_total'] * $row['rate'];
         }
     }
     respond(true,['metrics'=>$metrics,'estimated_earnings'=>$earn]);
+} elseif ($_SERVER['REQUEST_METHOD']==='GET' && $action === 'projections') {
+    if (($_SESSION['role'] ?? '') !== 'brand') {
+        respond(false, null, 'Only brands can view projections');
+    }
+    $brandId = $_SESSION['user_id'];
+    $campaignId = $_GET['campaign_id'] ?? null;
+
+    $sql = 'SELECT c.id,c.title,c.goal_type,c.target_metrics,c.start_date,c.end_date, '.
+           'SUM(m.impressions) as impressions, SUM(m.engagement_total) as engagement '.
+           'FROM campaigns c LEFT JOIN content_submissions cs ON cs.campaign_id=c.id '.
+           'LEFT JOIN metrics m ON m.submission_id=cs.id WHERE c.brand_id=?';
+    $params = [$brandId];
+    if ($campaignId) {
+        $sql .= ' AND c.id=?';
+        $params[] = $campaignId;
+    }
+    $sql .= ' GROUP BY c.id';
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $projections = [];
+    foreach ($rows as $r) {
+        $start = $r['start_date'] ? new DateTime($r['start_date']) : new DateTime('-7 days');
+        $end = $r['end_date'] ? new DateTime($r['end_date']) : new DateTime('+7 days');
+        $now = new DateTime();
+        $daysElapsed = max(1, $start->diff($now)->days);
+        $totalDays = max($daysElapsed, $start->diff($end)->days);
+        $metric = ($r['goal_type'] === 'CPM') ? $r['impressions'] : $r['engagement'];
+        $projected = ($metric / $daysElapsed) * $totalDays;
+        $suggest = '';
+        if ($r['target_metrics'] && $projected < $r['target_metrics']) {
+            $suggest = 'Projected below target, consider boosting posts or adding influencers';
+        } else {
+            $suggest = 'On track';
+        }
+        $projections[] = [
+            'campaign_id' => $r['id'],
+            'title' => $r['title'],
+            'current' => (int)$metric,
+            'projected' => (int)round($projected),
+            'target' => (int)$r['target_metrics'],
+            'suggestion' => $suggest
+        ];
+    }
+    respond(true, $campaignId ? ($projections[0] ?? null) : $projections);
 } else {
     respond(false, 'Invalid request');
 }

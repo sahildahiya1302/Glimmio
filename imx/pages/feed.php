@@ -1,5 +1,7 @@
 <?php
-session_start();
+require_once __DIR__ . '/../includes/security.php';
+secure_session_start();
+secure_page_headers();
 $role = $_SESSION['role'] ?? 'guest';
 ?>
 <!DOCTYPE html>

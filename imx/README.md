@@ -113,6 +113,15 @@ progress and the campaign timeline, as well as a short suggestion if the
 projection is below the target metrics. The brand dashboard visualises this
 data with an additional chart under the analytics tab.
 
+## Conversion Pixel
+
+Pages include `/js/pixel.js` which sends a `page_view` event and persists
+`campaign_id`, `submission_id` and `influencer_id` parameters from the URL.
+Calls to `glimmioPixel.conversion(value)` trigger a `purchase` event. The
+backend (`backend/pixel.php`) records these events in `pixel_events` for raw
+logging and in `user_events` for attribution so conversions can be tied back to
+the correct campaign and influencer.
+
 ## Development
 
 To install PHP dependencies, run `composer install` inside this directory. Ensure a MySQL server is available and load `schema.sql` to create tables.

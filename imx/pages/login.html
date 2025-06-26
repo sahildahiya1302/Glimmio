@@ -115,18 +115,25 @@
         const closeInfluencerBtn = document.getElementById('close-influencer-register');
         const selectBrandBtn = document.getElementById('select-brand');
         const selectInfluencerBtn = document.getElementById('select-influencer');
+        const loginForm = document.getElementById('login-form-container');
+        const registerForm = document.getElementById('register-form-container');
+        const showLoginLink = document.getElementById('show-login');
 
         openRegisterBtn.onclick = () => {
+            loginForm.style.display = 'none';
             userTypeModal.style.display = 'block';
         };
         closeUserTypeBtn.onclick = () => {
             userTypeModal.style.display = 'none';
+            loginForm.style.display = 'block';
         };
         closeBrandBtn.onclick = () => {
             brandModal.style.display = 'none';
+            loginForm.style.display = 'block';
         };
         closeInfluencerBtn.onclick = () => {
             influencerModal.style.display = 'none';
+            loginForm.style.display = 'block';
         };
 
         selectBrandBtn.onclick = () => {
@@ -138,15 +145,26 @@
             influencerModal.style.display = 'block';
         };
 
+        showLoginLink.onclick = (e) => {
+            e.preventDefault();
+            brandModal.style.display = 'none';
+            influencerModal.style.display = 'none';
+            userTypeModal.style.display = 'none';
+            loginForm.style.display = 'block';
+        };
+
         window.onclick = function(event) {
             if (event.target === brandModal) {
                 brandModal.style.display = 'none';
+                loginForm.style.display = 'block';
             }
             if (event.target === influencerModal) {
                 influencerModal.style.display = 'none';
+                loginForm.style.display = 'block';
             }
             if (event.target === userTypeModal) {
                 userTypeModal.style.display = 'none';
+                loginForm.style.display = 'block';
             }
         };
 

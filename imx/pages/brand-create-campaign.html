@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" href="../css/instagram-theme.css" />
+<title>Create Campaign - Brand Panel</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 20px; }
+  .step { display: none; }
+  .step.active { display: block; }
+  .buttons { margin-top: 20px; }
+  .buttons button { margin-right: 10px; }
+  label { display: block; margin-top: 10px; }
+  input[type="text"], input[type="email"], input[type="number"], select, textarea {
+    width: 100%; padding: 8px; margin-top: 5px; box-sizing: border-box;
+  }
+  .summary { background: #f9f9f9; padding: 10px; border: 1px solid #ccc; }
+</style>
+</head>
+<body>
+<h1>Create Campaign</h1>
+<form id="campaignForm">
+  <!-- Step 1: Campaign Basics -->
+  <div class="step active" id="step1">
+    <h2>Step 1: Campaign Basics</h2>
+    <label for="title">Campaign Name</label>
+    <input type="text" id="title" name="title" required />
+
+    <label for="objective">Campaign Objective</label>
+    <select id="objective" name="objective" required>
+      <option value="">Select Objective</option>
+      <option value="awareness">Awareness</option>
+      <option value="conversion">Conversion</option>
+      <option value="product_launch">Product Launch</option>
+    </select>
+
+    <label for="start_date">Start Date</label>
+    <input type="date" id="start_date" name="start_date" required />
+
+    <label for="end_date">End Date</label>
+    <input type="date" id="end_date" name="end_date" required />
+
+    <label for="content_type">Content Type Allowed</label>
+    <select id="content_type" name="content_type" required>
+      <option value="">Select Content Type</option>
+      <option value="post">Post</option>
+      <option value="reel">Reel</option>
+      <option value="story">Story</option>
+      <option value="carousel">Carousel</option>
+    </select>
+  </div>
+
+  <!-- Step 2: Creative Brief -->
+  <div class="step" id="step2">
+    <h2>Step 2: Creative Brief</h2>
+    <label for="sample_creatives">Upload Sample Creatives (images/videos)</label>
+    <input type="file" id="sample_creatives" name="sample_creatives" multiple />
+
+    <label for="guidelines">Guidelines</label>
+    <textarea id="guidelines" name="guidelines" rows="4"></textarea>
+
+    <label for="hashtags_required">Hashtags / Mentions Required</label>
+    <input type="text" id="hashtags_required" name="hashtags_required" placeholder="#example #brand" />
+
+    <label for="caption_suggestions">Caption Suggestions (optional)</label>
+    <textarea id="caption_suggestions" name="caption_suggestions" rows="3"></textarea>
+  </div>
+
+  <!-- Step 3: Targeting & Influencer Preferences -->
+  <div class="step" id="step3">
+    <h2>Step 3: Targeting & Influencer Preferences</h2>
+    <label for="gender">Audience Gender</label>
+    <select id="gender" name="gender">
+      <option value="">Any</option>
+      <option value="male">Male</option>
+      <option value="female">Female</option>
+      <option value="other">Other</option>
+    </select>
+
+    <label for="age_min">Age Range Min</label>
+    <input type="number" id="age_min" name="age_min" min="0" max="100" />
+
+    <label for="age_max">Age Range Max</label>
+    <input type="number" id="age_max" name="age_max" min="0" max="100" />
+
+    <label for="location">Location</label>
+    <input type="text" id="location" name="location" placeholder="City, Country" />
+
+    <label for="language">Language</label>
+    <input type="text" id="language" name="language" placeholder="English, Hindi, etc." />
+
+    <label for="niche">Influencer Niche</label>
+    <select id="niche" name="niche">
+      <option value="">Any</option>
+      <option value="fashion">Fashion</option>
+      <option value="tech">Tech</option>
+      <option value="food">Food</option>
+      <option value="travel">Travel</option>
+      <option value="fitness">Fitness</option>
+    </select>
+
+    <label for="min_followers">Min Follower Count</label>
+    <input type="number" id="min_followers" name="min_followers" min="0" />
+
+    <label for="badge_level">Badge Level</label>
+    <select id="badge_level" name="badge_level">
+      <option value="">Any</option>
+      <option value="bronze">Bronze</option>
+      <option value="silver">Silver</option>
+      <option value="gold">Gold</option>
+      <option value="elite">Elite</option>
+    </select>
+
+    <label for="max_influencers">Max Influencers Allowed</label>
+    <input type="number" id="max_influencers" name="max_influencers" min="1" />
+  </div>
+
+  <!-- Step 4: Budget & Optimization Goal -->
+  <div class="step" id="step4">
+    <h2>Step 4: Budget & Optimization Goal</h2>
+    <label for="goal_type">Optimization Goal</label>
+    <select id="goal_type" name="goal_type" required>
+      <option value="">Select Goal</option>
+      <option value="CPM">CPM (Impression-based)</option>
+      <option value="CPE">CPE (Engagement-based)</option>
+    </select>
+
+    <label for="cpm_rate">CPM Rate (₹ per 1,000 impressions)</label>
+    <input type="number" id="cpm_rate" name="cpm_rate" min="0" step="0.01" />
+
+    <label for="cpe_rate">CPE Rate (₹ per engagement)</label>
+    <input type="number" id="cpe_rate" name="cpe_rate" min="0" step="0.01" />
+
+    <label for="total_budget">Total Spend Budget (₹)</label>
+    <input type="number" id="total_budget" name="total_budget" min="0" step="0.01" required />
+
+    <p id="estimated_outcome"></p>
+  </div>
+
+  <!-- Step 5: Review & Publish -->
+  <div class="step" id="step5">
+    <h2>Step 5: Review & Publish</h2>
+    <div class="summary" id="reviewSummary"></div>
+    <label>
+      <input type="checkbox" id="acceptTerms" required />
+      I accept the terms and conditions.
+    </label>
+  </div>
+
+  <div class="buttons">
+    <button type="button" id="prevBtn" onclick="nextPrev(-1)" disabled>Previous</button>
+    <button type="button" id="nextBtn" onclick="nextPrev(1)">Next</button>
+  </div>
+</form>
+
+<script>
+  let currentStep = 0;
+  const steps = document.querySelectorAll('.step');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const estimatedOutcome = document.getElementById('estimated_outcome');
+  const reviewSummary = document.getElementById('reviewSummary');
+
+  function showStep(n) {
+    steps.forEach((step, i) => {
+      step.classList.toggle('active', i === n);
+    });
+    prevBtn.disabled = n === 0;
+    nextBtn.textContent = n === steps.length - 1 ? 'Publish' : 'Next';
+    if (n === steps.length - 1) {
+      displayReview();
+    }
+  }
+
+  function nextPrev(n) {
+    if (n === 1 && !validateForm()) return false;
+    currentStep += n;
+    if (currentStep >= steps.length) {
+      submitForm();
+      return false;
+    }
+    showStep(currentStep);
+  }
+
+  function validateForm() {
+    const step = steps[currentStep];
+    const inputs = step.querySelectorAll('input, select, textarea');
+    for (let input of inputs) {
+      if (input.hasAttribute('required') && !input.value) {
+        alert('Please fill all required fields.');
+        return false;
+      }
+    }
+    if (currentStep === steps.length - 1) {
+      const acceptTerms = document.getElementById('acceptTerms');
+      if (!acceptTerms.checked) {
+        alert('You must accept the terms and conditions.');
+        return false;
+      }
+    }
+    return true;
+  }
+
+  function displayReview() {
+    const formData = new FormData(document.getElementById('campaignForm'));
+    let html = '<h3>Review Your Campaign</h3><ul>';
+    for (let [key, value] of formData.entries()) {
+      html += `<li><strong>${key}:</strong> ${value}</li>`;
+    }
+    html += '</ul>';
+    reviewSummary.innerHTML = html;
+  }
+
+  function submitForm() {
+    const form = document.getElementById('campaignForm');
+    const formData = new FormData(form);
+
+    // Prepare data for backend
+    const data = {
+      action: 'create',
+      title: formData.get('title'),
+      objective: formData.get('objective'),
+      start_date: formData.get('start_date'),
+      end_date: formData.get('end_date'),
+      goal_type: formData.get('goal_type'),
+      target_metrics: 0, // Will calculate below
+      budget_total: parseFloat(formData.get('total_budget')),
+      commission_percent: 10 // default commission
+    };
+
+    // Calculate target_metrics based on goal_type and budget
+    const goalType = formData.get('goal_type');
+    const totalBudget = parseFloat(formData.get('total_budget'));
+    const cpmRate = parseFloat(formData.get('cpm_rate')) || 0;
+    const cpeRate = parseFloat(formData.get('cpe_rate')) || 0;
+
+    if (goalType === 'CPM' && cpmRate > 0) {
+      data.target_metrics = Math.floor((totalBudget / cpmRate) * 1000);
+    } else if (goalType === 'CPE' && cpeRate > 0) {
+      data.target_metrics = Math.floor(totalBudget / cpeRate);
+    } else {
+      alert('Please enter valid CPM or CPE rates.');
+      return;
+    }
+
+    fetch('/backend/campaign.php', {
+      method: 'POST',
+      body: new URLSearchParams(data),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    })
+    .then(res => res.json())
+    .then(res => {
+      if (res.success) {
+        alert('Campaign created successfully! Campaign ID: ' + res.data.campaign_id);
+        window.location.href = 'brand-dashboard.php';
+      } else {
+        alert('Error: ' + res.message);
+      }
+    })
+    .catch(err => {
+      alert('Request failed: ' + err.message);
+    });
+  }
+
+  // Update estimated outcome on budget or rate change
+  document.getElementById('total_budget').addEventListener('input', updateEstimatedOutcome);
+  document.getElementById('goal_type').addEventListener('change', updateEstimatedOutcome);
+  document.getElementById('cpm_rate').addEventListener('input', updateEstimatedOutcome);
+  document.getElementById('cpe_rate').addEventListener('input', updateEstimatedOutcome);
+
+  function updateEstimatedOutcome() {
+    const goalType = document.getElementById('goal_type').value;
+    const totalBudget = parseFloat(document.getElementById('total_budget').value) || 0;
+    const cpmRate = parseFloat(document.getElementById('cpm_rate').value) || 0;
+    const cpeRate = parseFloat(document.getElementById('cpe_rate').value) || 0;
+
+    if (goalType === 'CPM' && cpmRate > 0) {
+      const impressions = Math.floor((totalBudget / cpmRate) * 1000);
+      estimatedOutcome.textContent = `Estimated Impressions: ${impressions.toLocaleString()}`;
+    } else if (goalType === 'CPE' && cpeRate > 0) {
+      const engagements = Math.floor(totalBudget / cpeRate);
+      estimatedOutcome.textContent = `Estimated Engagements: ${engagements.toLocaleString()}`;
+    } else {
+      estimatedOutcome.textContent = '';
+    }
+  }
+
+  showStep(currentStep);
+</script>
+</body>
+</html>

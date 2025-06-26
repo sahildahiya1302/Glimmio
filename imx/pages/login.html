@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:">
     <title>Login</title>
     <link rel="stylesheet" href="../css/login-style.css">
     <link rel="stylesheet" href="../css/instagram-theme.css">
@@ -59,6 +60,9 @@
             <h2>Register as Brand</h2>
             <form id="brand-register-form">
                 <input type="email" id="brand-register-email" placeholder="Email" required style="width:100%; margin:8px 0; padding:8px; box-sizing:border-box;" />
+                <input type="text" id="brand-register-company" placeholder="Company Name" required style="width:100%; margin:8px 0; padding:8px; box-sizing:border-box;" />
+                <input type="url" id="brand-register-website" placeholder="Website" required style="width:100%; margin:8px 0; padding:8px; box-sizing:border-box;" />
+                <input type="text" id="brand-register-industry" placeholder="Industry" required style="width:100%; margin:8px 0; padding:8px; box-sizing:border-box;" />
                 <input type="password" id="brand-register-password" placeholder="Password" required style="width:100%; margin:8px 0; padding:8px; box-sizing:border-box;" />
                 <input type="password" id="brand-register-password-confirm" placeholder="Confirm Password" required style="width:100%; margin:8px 0; padding:8px; box-sizing:border-box;" />
                 <input type="hidden" id="csrf_brand" name="csrf_token" />
@@ -74,6 +78,8 @@
             <h2>Register as Influencer</h2>
             <form id="influencer-register-form">
                 <input type="email" id="influencer-register-email" placeholder="Email" required style="width:100%; margin:8px 0; padding:8px; box-sizing:border-box;" />
+                <input type="text" id="influencer-register-handle" placeholder="Instagram Handle" required style="width:100%; margin:8px 0; padding:8px; box-sizing:border-box;" />
+                <input type="text" id="influencer-register-category" placeholder="Category" required style="width:100%; margin:8px 0; padding:8px; box-sizing:border-box;" />
                 <input type="password" id="influencer-register-password" placeholder="Password" required style="width:100%; margin:8px 0; padding:8px; box-sizing:border-box;" />
                 <input type="password" id="influencer-register-password-confirm" placeholder="Confirm Password" required style="width:100%; margin:8px 0; padding:8px; box-sizing:border-box;" />
                 <input type="hidden" id="csrf_influencer" name="csrf_token" />
@@ -174,6 +180,9 @@
         document.getElementById('brand-register-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             const email = document.getElementById('brand-register-email').value;
+            const company = document.getElementById('brand-register-company').value;
+            const website = document.getElementById('brand-register-website').value;
+            const industry = document.getElementById('brand-register-industry').value;
             const password = document.getElementById('brand-register-password').value;
             const passwordConfirm = document.getElementById('brand-register-password-confirm').value;
 
@@ -190,6 +199,9 @@
                     email: email,
                     password: password,
                     role: 'brand',
+                    company_name: company,
+                    website: website,
+                    industry: industry,
                     csrf_token: csrfToken
                 })
             });
@@ -204,6 +216,8 @@
         document.getElementById('influencer-register-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             const email = document.getElementById('influencer-register-email').value;
+            const handle = document.getElementById('influencer-register-handle').value;
+            const category = document.getElementById('influencer-register-category').value;
             const password = document.getElementById('influencer-register-password').value;
             const passwordConfirm = document.getElementById('influencer-register-password-confirm').value;
 
@@ -220,6 +234,8 @@
                     email: email,
                     password: password,
                     role: 'influencer',
+                    instagram_handle: handle,
+                    category: category,
                     csrf_token: csrfToken
                 })
             });

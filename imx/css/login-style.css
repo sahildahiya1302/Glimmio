@@ -19,6 +19,11 @@ body {
     text-align: center;
 }
 
+/* Hide registration block by default */
+#register-form-container {
+    display: none;
+}
+
 #login-title {
     font-size: 1.8rem;
     margin-bottom: 20px;

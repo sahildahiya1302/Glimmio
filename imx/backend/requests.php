@@ -64,6 +64,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && $action === 'list_requests') {
     // Update request status
     $stmt = $pdo->prepare('UPDATE requests SET status = ?, decision_at = NOW() WHERE id = ?');
     if ($stmt->execute([$status, $request_id])) {
+        require_once __DIR__ . '/../includes/mail.php';
+        $info = $pdo->prepare('SELECT i.email, b.company_name, c.title FROM requests r JOIN influencers i ON r.influencer_uid=i.id JOIN campaigns c ON r.campaign_id=c.id JOIN brands b ON c.brand_id=b.id WHERE r.id=?');
+        $info->execute([$request_id]);
+        $row = $info->fetch(PDO::FETCH_ASSOC);
+        if ($row) {
+            $msg = "Your request for campaign '{$row['title']}' has been {$status}.";
+            send_mail($row['email'], 'Campaign request update', $msg);
+        }
         respond(true, null, 'Request status updated.');
     } else {
         respond(false, null, 'Failed to update request status.');
@@ -90,6 +98,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && $action === 'list_requests') {
     }
     $stmt = $pdo->prepare('INSERT INTO requests (influencer_uid, campaign_id, message, status, created_at) VALUES (?, ?, ?, ?, NOW())');
     if ($stmt->execute([$influencer_id, $campaign_id, null, 'pending'])) {
+        require_once __DIR__ . '/../includes/mail.php';
+        $info = $pdo->prepare('SELECT email FROM influencers WHERE id=?');
+        $info->execute([$influencer_id]);
+        $email = $info->fetchColumn();
+        if ($email) {
+            send_mail($email, 'Campaign invitation', 'You have been invited to participate in a campaign.');
+        }
         respond(true, null, 'Invitation sent');
     } else {
         respond(false, null, 'Failed to send invitation');

@@ -117,25 +117,26 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const response = await fetch('/backend/auth.php', {
+        let resp = await fetch('/backend/auth.php', {
             method: 'POST',
-            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            headers: {'Content-Type':'application/x-www-form-urlencoded'},
+            body: new URLSearchParams({action:'send_otp', email:email, csrf_token:csrfToken})
+        });
+        let data = await resp.json();
+        if (!data.success) { alert(data.message); return; }
+        const code = prompt('Enter OTP sent to your email');
+        if (!code) return;
+        resp = await fetch('/backend/auth.php', {
+            method: 'POST',
+            headers: {'Content-Type':'application/x-www-form-urlencoded'},
             body: new URLSearchParams({
-                action: 'register',
-                email: email,
-                password: password,
-                role: 'brand',
-                company_name: company,
-                website: website,
-                industry: industry,
-                csrf_token: csrfToken
+                action:'register', email, password, role:'brand', company_name:company,
+                website, industry, otp:code, csrf_token:csrfToken
             })
         });
-        const result = await response.json();
-        alert(result.message);
-        if (result.success) {
-            brandModal.style.display = 'none';
-        }
+        data = await resp.json();
+        alert(data.message);
+        if (data.success) brandModal.style.display = 'none';
     });
 
     document.getElementById('influencer-register-form').addEventListener('submit', async function(e) {
@@ -151,22 +152,26 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const response = await fetch('/backend/auth.php', {
+        let resp = await fetch('/backend/auth.php', {
             method: 'POST',
-            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            headers: {'Content-Type':'application/x-www-form-urlencoded'},
+            body: new URLSearchParams({action:'send_otp', email:email, csrf_token:csrfToken})
+        });
+        let data = await resp.json();
+        if (!data.success) { alert(data.message); return; }
+        const code = prompt('Enter OTP sent to your email');
+        if (!code) return;
+        resp = await fetch('/backend/auth.php', {
+            method: 'POST',
+            headers: {'Content-Type':'application/x-www-form-urlencoded'},
             body: new URLSearchParams({
-                action: 'register',
-                email: email,
-                password: password,
-                role: 'influencer',
-                instagram_handle: handle,
-                category: category,
-                csrf_token: csrfToken
+                action:'register', email, password, role:'influencer', instagram_handle:handle,
+                category, otp:code, csrf_token:csrfToken
             })
         });
-        const result = await response.json();
-        alert(result.message);
-        if (result.success && oauthConfig) {
+        data = await resp.json();
+        alert(data.message);
+        if (data.success && oauthConfig) {
             influencerModal.style.display = 'none';
             const scopes = 'pages_user_timezone,instagram_branded_content_creator,instagram_branded_content_brand,instagram_manage_events,instagram_business_basic,instagram_business_manage_messages,instagram_business_content_publish,instagram_business_manage_insights,instagram_business_manage_comments,pages_read_engagement,ads_management,instagram_content_publish,instagram_manage_comments';
             window.location.href = 'https://api.instagram.com/oauth/authorize?client_id=' +

@@ -35,7 +35,19 @@ try {
             respond(false, 'Invalid CSRF token.');
         }
 
-        if ($action === 'register') {
+        if ($action === 'send_otp') {
+            $email = $_POST['email'] ?? '';
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                respond(false, 'Invalid email');
+            }
+            $otp = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+            $_SESSION['otp_'.$email] = password_hash($otp, PASSWORD_DEFAULT);
+            require_once __DIR__ . '/../includes/mail.php';
+            if (send_otp_email($email, $otp)) {
+                respond(true, 'OTP sent');
+            }
+            respond(false, 'Failed to send OTP');
+        } elseif ($action === 'register') {
             $email = $_POST['email'] ?? '';
             $password = $_POST['password'] ?? '';
             $role = $_POST['role'] ?? '';
@@ -64,6 +76,12 @@ try {
             if ($stmt->fetch()) {
                 respond(false, 'Email is already registered.');
             }
+
+            $otp = $_POST['otp'] ?? '';
+            if (!isset($_SESSION['otp_'.$email]) || !password_verify($otp, $_SESSION['otp_'.$email])) {
+                respond(false, 'Invalid or expired OTP');
+            }
+            unset($_SESSION['otp_'.$email]);
 
             $password_hash = password_hash($password, PASSWORD_DEFAULT);
             if ($role === 'brand') {

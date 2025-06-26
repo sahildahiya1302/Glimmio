@@ -118,6 +118,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && $action === 'profile' && $role === '
     $stmt = $pdo->prepare('INSERT INTO requests (influencer_uid, campaign_id, message, status, reel_url, created_at) VALUES (?, ?, ?, ?, ?, NOW())');
     try {
         $stmt->execute([$user_id, $campaign_id, $message, 'pending', $reel_url]);
+        require_once __DIR__ . '/../includes/mail.php';
+        $info = $pdo->prepare('SELECT b.email, c.title FROM campaigns c JOIN brands b ON c.brand_id=b.id WHERE c.id=?');
+        $info->execute([$campaign_id]);
+        $r = $info->fetch(PDO::FETCH_ASSOC);
+        if ($r) {
+            send_mail($r['email'], 'New participation request', 'An influencer has requested to join your campaign "'.htmlspecialchars($r['title']).'".');
+        }
         respond(true, null, 'Request submitted successfully.');
     } catch (Exception $ex) {
         error_log('Error submitting request: ' . $ex->getMessage());

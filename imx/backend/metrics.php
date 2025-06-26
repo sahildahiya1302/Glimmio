@@ -197,6 +197,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'complete_profile') {
         ];
     }
     respond(true, $campaignId ? ($projections[0] ?? null) : $projections);
+} elseif ($_SERVER['REQUEST_METHOD']==='GET' && $action === 'send_daily_report') {
+    if (($_SESSION['role'] ?? '') !== 'brand') {
+        respond(false, null, 'Only brands can request report');
+    }
+    $brandId = $_SESSION['user_id'];
+    $stmt = $pdo->prepare('SELECT id,title FROM campaigns WHERE brand_id=? AND status="active"');
+    $stmt->execute([$brandId]);
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    if (!$rows) respond(false,null,'No active campaigns');
+    $report='';
+    foreach($rows as $c){
+        $m = $pdo->prepare('SELECT SUM(impressions) as imp,SUM(engagement_total) as eng FROM metrics m JOIN content_submissions cs ON m.submission_id=cs.id WHERE cs.campaign_id=?');
+        $m->execute([$c['id']]);
+        $data=$m->fetch(PDO::FETCH_ASSOC);
+        $report .= "<h3>{$c['title']}</h3><p>Impressions: " . ($data['imp']??0) . " | Engagement: " . ($data['eng']??0) . "</p>";
+    }
+    require_once __DIR__ . '/../includes/mail.php';
+    $bemail = $pdo->prepare('SELECT email FROM brands WHERE id=?');
+    $bemail->execute([$brandId]);
+    $to = $bemail->fetchColumn();
+    if ($to && send_mail($to, 'Daily campaign report', $report)) {
+        respond(true,null,'Report sent');
+    }
+    respond(false,null,'Failed to send report');
 } else {
     respond(false, 'Invalid request');
 }

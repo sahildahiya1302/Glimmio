@@ -85,6 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const response = await fetch('/backend/auth.php', {
             method: 'POST',
+            credentials: 'same-origin',
             headers: {'Content-Type': 'application/x-www-form-urlencoded'},
             body: new URLSearchParams({
                 action: 'login',
@@ -119,6 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let resp = await fetch('/backend/auth.php', {
             method: 'POST',
+            credentials: 'same-origin',
             headers: {'Content-Type':'application/x-www-form-urlencoded'},
             body: new URLSearchParams({action:'send_otp', email:email, csrf_token:csrfToken})
         });
@@ -128,6 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!code) return;
         resp = await fetch('/backend/auth.php', {
             method: 'POST',
+            credentials: 'same-origin',
             headers: {'Content-Type':'application/x-www-form-urlencoded'},
             body: new URLSearchParams({
                 action:'register', email, password, role:'brand', company_name:company,
@@ -154,6 +157,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let resp = await fetch('/backend/auth.php', {
             method: 'POST',
+            credentials: 'same-origin',
             headers: {'Content-Type':'application/x-www-form-urlencoded'},
             body: new URLSearchParams({action:'send_otp', email:email, csrf_token:csrfToken})
         });
@@ -163,6 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!code) return;
         resp = await fetch('/backend/auth.php', {
             method: 'POST',
+            credentials: 'same-origin',
             headers: {'Content-Type':'application/x-www-form-urlencoded'},
             body: new URLSearchParams({
                 action:'register', email, password, role:'influencer', instagram_handle:handle,

@@ -81,8 +81,17 @@ async function loadFeed(reset=false) {
   grid.setAttribute('aria-busy', 'true');
   if(offset === 0) grid.innerHTML = '<div class="skeleton"></div>'.repeat(6);
 
-  const res = await fetch(url);
-  const data = await res.json();
+  let data = {};
+  try {
+    const res = await fetch(url);
+    if(res.ok){
+      data = await res.json();
+    } else {
+      console.error('Feed request failed', res.status);
+    }
+  } catch(err){
+    console.error('Feed parse error', err);
+  }
   if(data.success){
     posts = posts.concat(data.data);
     offset += data.data.length;

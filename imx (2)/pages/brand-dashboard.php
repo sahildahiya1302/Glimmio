@@ -496,7 +496,8 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'brand') {
                     e.preventDefault();
                     const targetID = link.getAttribute('href').substring(1);
                     sections.forEach(sec => sec.style.display = 'none');
-                    document.getElementById(targetID).style.display = 'block';
+                    const target = document.getElementById(targetID);
+                    if (target) target.style.display = 'block';
                 });
             });
             sections.forEach(sec => sec.style.display = 'none');

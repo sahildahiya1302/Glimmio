@@ -139,7 +139,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         data = await resp.json();
         alert(data.message);
-        if (data.success) brandModal.style.display = 'none';
+        if (data.success) {
+            brandModal.style.display = 'none';
+            loginForm.style.display = 'block';
+        }
     });
 
     document.getElementById('influencer-register-form').addEventListener('submit', async function(e) {
@@ -176,8 +179,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         data = await resp.json();
         alert(data.message);
-        if (data.success && oauthConfig) {
+        if (data.success) {
             influencerModal.style.display = 'none';
+            loginForm.style.display = 'block';
+        }
+        if (data.success && oauthConfig) {
             const scopes = 'pages_user_timezone,instagram_branded_content_creator,instagram_branded_content_brand,instagram_manage_events,instagram_business_basic,instagram_business_manage_messages,instagram_business_content_publish,instagram_business_manage_insights,instagram_business_manage_comments,pages_read_engagement,ads_management,instagram_content_publish,instagram_manage_comments';
             window.location.href = 'https://api.instagram.com/oauth/authorize?client_id=' +
                 encodeURIComponent(oauthConfig.instagramClientId) +

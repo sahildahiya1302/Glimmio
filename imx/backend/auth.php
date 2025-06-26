@@ -24,7 +24,6 @@ try {
         exit;
     } elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $action = $_POST['action'] ?? '';
-        $action = $_POST['action'] ?? '';
 
         // Load environment variables
         env('JWT_SECRET'); // ensures .env is parsed
@@ -41,7 +40,11 @@ try {
                 respond(false, 'Invalid email');
             }
             $otp = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
-            $_SESSION['otp_'.$email] = password_hash($otp, PASSWORD_DEFAULT);
+            if (!isset($_SESSION['otp'])) { $_SESSION['otp'] = []; }
+            $_SESSION['otp'][$email] = [
+                'hash' => password_hash($otp, PASSWORD_DEFAULT),
+                'exp' => time() + 300
+            ];
             require_once __DIR__ . '/../includes/mail.php';
             if (send_otp_email($email, $otp)) {
                 respond(true, 'OTP sent');
@@ -78,10 +81,12 @@ try {
             }
 
             $otp = $_POST['otp'] ?? '';
-            if (!isset($_SESSION['otp_'.$email]) || !password_verify($otp, $_SESSION['otp_'.$email])) {
+            if (!isset($_SESSION['otp'][$email]) ||
+                $_SESSION['otp'][$email]['exp'] < time() ||
+                !password_verify($otp, $_SESSION['otp'][$email]['hash'])) {
                 respond(false, 'Invalid or expired OTP');
             }
-            unset($_SESSION['otp_'.$email]);
+            unset($_SESSION['otp'][$email]);
 
             $password_hash = password_hash($password, PASSWORD_DEFAULT);
             if ($role === 'brand') {
@@ -136,7 +141,7 @@ try {
                     'role' => 'influencer',
                     'exp' => time() + 3600
                 ], env('JWT_SECRET', 'secret'));
-                respond(true, 'Login successful.', 'dashboard.php', ['token' => $token]);
+                respond(true, 'Login successful.', '../dashboard.php', ['token' => $token]);
             }
 
             respond(false, 'Invalid email or password.');

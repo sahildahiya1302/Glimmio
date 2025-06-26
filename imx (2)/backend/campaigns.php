@@ -92,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'post_campaign') {
 
     // Insert campaign into database
     $stmt = $pdo->prepare('INSERT INTO campaigns (brand_id, title, objective, description, category, min_followers, badge_min, max_influencers, start_date, end_date, goal_type, rate, target_metrics, budget_total, commission_percent, influencer_payout_total, image_url, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())');
-    $status = 'published';
+    $status = 'active';
     try {
         $stmt->execute([
             $brand_id,

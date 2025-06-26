@@ -231,6 +231,7 @@ body {
 }
 .status-dot.published {background: orange;}
 .status-dot.live {background: green;}
+.status-dot.active {background: green;}
 .status-dot.completed {background: gray;}
 .status-dot.archived {background: black;}
 .status-dot.draft {background: #ccc;}

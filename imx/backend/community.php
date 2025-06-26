@@ -32,10 +32,14 @@ if($action==='list'){
     if($conds){
         $sql.=' WHERE '.implode(' AND ',$conds);
     }
+    $limit=intval($_GET['limit'] ?? 20);
+    $offset=intval($_GET['offset'] ?? 0);
     if($filter==='trending'){
-        $sql.=' ORDER BY (cp.like_count+cp.comment_count+cp.share_count) DESC LIMIT 50';
+        $sql.=' ORDER BY (cp.like_count+cp.comment_count+cp.share_count) DESC LIMIT ? OFFSET ?';
+        $params[]=$limit; $params[]=$offset;
     }else{
-        $sql.=' ORDER BY cp.created_at DESC LIMIT 50';
+        $sql.=' ORDER BY cp.created_at DESC LIMIT ? OFFSET ?';
+        $params[]=$limit; $params[]=$offset;
     }
     $stmt=$pdo->prepare($sql);
     $stmt->execute($params);

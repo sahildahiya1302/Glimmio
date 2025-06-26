@@ -55,24 +55,41 @@ $role = $_SESSION['role'] ?? 'guest';
 <script>
 const role = '<?php echo $role; ?>';
 let posts = [];
+let offset = 0;
+const limit = 10;
+let loading = false;
+let allLoaded = false;
 const commentPopup = document.getElementById('comment-popup');
 const commentsList = document.getElementById('comments-list');
 const commentText = document.getElementById('comment-text');
 
-async function loadFeed() {
+async function loadFeed(reset=false) {
+  if (loading || allLoaded && !reset) return;
+  loading = true;
   const activeChip = document.querySelector('.filter-bar .chip.active');
   const filter = activeChip ? activeChip.dataset.filter : '';
-  let url = '/backend/community.php?action=list';
+  if(reset){
+    offset = 0;
+    posts = [];
+    allLoaded = false;
+    document.getElementById('feed-grid').innerHTML = '';
+  }
+  let url = `/backend/community.php?action=list&limit=${limit}&offset=${offset}`;
   if (filter === 'trending') url += '&filter=trending';
 
   const grid = document.getElementById('feed-grid');
   grid.setAttribute('aria-busy', 'true');
-  grid.innerHTML = '<div class="skeleton"></div>'.repeat(6);
+  if(offset === 0) grid.innerHTML = '<div class="skeleton"></div>'.repeat(6);
 
   const res = await fetch(url);
   const data = await res.json();
-  posts = data.success ? data.data : [];
+  if(data.success){
+    posts = posts.concat(data.data);
+    offset += data.data.length;
+    if(data.data.length < limit) allLoaded = true;
+  }
   renderPosts(filter);
+  loading = false;
 }
 
 function renderPosts(filter = '') {
@@ -154,11 +171,11 @@ function renderPosts(filter = '') {
 function attachHandlers() {
   document.querySelectorAll('.like-btn').forEach(btn => {
     btn.onclick = async () => {
-      await fetch('/backend/community.php?action=like', {
-        method: 'POST',
-        body: new URLSearchParams({ post_id: btn.dataset.id })
-      });
-      loadFeed();
+        await fetch('/backend/community.php?action=like', {
+          method: 'POST',
+          body: new URLSearchParams({ post_id: btn.dataset.id })
+        });
+        loadFeed(true);
     };
   });
   document.querySelectorAll('.share-btn').forEach(btn => {
@@ -185,9 +202,9 @@ function attachHandlers() {
           post_id: btn.dataset.id,
           option: btn.dataset.opt
         })
-      });
-      loadFeed();
-    };
+        });
+        loadFeed(true);
+      };
   });
   document.querySelectorAll('.comment-toggle').forEach(btn => {
     btn.onclick = () => openComments(btn.dataset.id);
@@ -243,7 +260,7 @@ document.querySelectorAll('.filter-bar .chip').forEach(chip => {
     });
     chip.classList.add('active');
     chip.setAttribute('aria-selected', 'true');
-    loadFeed();
+    loadFeed(true);
   };
 });
 
@@ -273,7 +290,13 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Load feed
-  loadFeed();
+  loadFeed(true);
+
+  window.addEventListener('scroll', () => {
+    if(window.innerHeight + window.pageYOffset >= document.body.offsetHeight - 200) {
+      loadFeed();
+    }
+  });
 });
 </script>
 </body>

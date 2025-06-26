@@ -43,8 +43,6 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'brand') {
                 <li><a href="#wallet">Wallet</a></li>
                 <li><a href="#submission-list">Content Submissions</a></li>
                 <li><a href="#analytics">Analytics</a></li>
-                <li><a href="#forum">Forum</a></li>
-                <li><a href="feed.php">Feed</a></li>
             </ul>
         </div>
 
@@ -136,14 +134,6 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'brand') {
                 <p id="projection-suggestion"></p>
             </section>
 
-            <section id="forum" style="display:none;">
-                <h3>Brand Forum</h3>
-                <form id="forum-form">
-                    <textarea id="forum-content" placeholder="Share updates" required style="width:100%;"></textarea>
-                    <button type="submit">Post</button>
-                </form>
-                <ul id="forum-list"></ul>
-            </section>
         </div>
     </div>
 
@@ -426,17 +416,6 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'brand') {
             }
         }
 
-        async function loadForum(){
-            const res = await fetch('/backend/community.php?action=list');
-            const data = await res.json();
-            const ul=document.getElementById('forum-list');
-            ul.innerHTML='';
-            if(data.success){
-                data.data.forEach(p=>{const li=document.createElement('li');li.innerHTML=`<strong>${p.author}</strong>: ${p.content} <button class="like-btn" data-id="${p.id}">❤ ${p.like_count||0}</button>`;ul.appendChild(li);});
-                document.querySelectorAll('.like-btn').forEach(btn=>{btn.onclick=async()=>{const r=await fetch('/backend/community.php?action=like',{method:'POST',headers:{'X-CSRF-Token': csrfToken},headers:{'X-CSRF-Token': csrfToken},body:new URLSearchParams({post_id:btn.dataset.id})});const d=await r.json();if(d.success) loadForum();};});
-            }
-        }
-
         async function loadWallet(){
             const r=await fetch('/backend/wallet.php?action=balance');
             const d=await r.json();
@@ -456,14 +435,6 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'brand') {
             const d=await r.json();alert(d.message);if(d.success) loadWallet();
         });
 
-        document.getElementById('forum-form').addEventListener('submit',async e=>{
-            e.preventDefault();
-            const content=document.getElementById('forum-content').value;
-            const fd=new FormData();fd.append('content',content);
-            const res=await fetch('/backend/community.php?action=post',{method:'POST',headers:{'X-CSRF-Token': csrfToken},body:fd});
-            const d=await res.json();
-            if(d.success){document.getElementById('forum-content').value='';loadForum();}else alert(d.message);
-        });
 
         let chart;
         let projChart;
@@ -513,7 +484,6 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'brand') {
             loadProfile();
             loadCampaigns().then(loadAnalytics);
             loadSubmissions();
-            loadForum();
             loadWallet();
             if(localStorage.getItem('theme')==='dark'){
                 document.body.classList.add('dark-mode');

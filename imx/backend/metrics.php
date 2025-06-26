@@ -18,6 +18,17 @@ if (!isset($_SESSION['user_id'])) {
 $pdo = db_connect();
 $action = $_GET['action'] ?? '';
 
+function badge_rate(PDO $pdo, string $badge): float {
+    $stmt = $pdo->prepare('SELECT cpm_rate FROM badge_rates WHERE badge_level=?');
+    $stmt->execute([$badge]);
+    $r = $stmt->fetchColumn();
+    if ($r === false) {
+        $def = ['bronze'=>0.50,'silver'=>0.60,'gold'=>0.65,'elite'=>0.75];
+        return $def[$badge] ?? 0.50;
+    }
+    return floatval($r);
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'complete_profile') {
     $role = $_POST['role'] ?? '';
     $userId = $_SESSION['user_id'];
@@ -121,8 +132,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'complete_profile') {
     $role = $_SESSION['role'];
     $user = $_SESSION['user_id'];
     $checkSql = $role==='brand'
-        ? 'SELECT cs.id,c.rate,c.goal_type FROM content_submissions cs JOIN campaigns c ON cs.campaign_id=c.id WHERE cs.id=? AND c.brand_id=?'
-        : 'SELECT cs.id,c.rate,c.goal_type FROM content_submissions cs JOIN campaigns c ON cs.campaign_id=c.id WHERE cs.id=? AND cs.influencer_id=?';
+        ? 'SELECT cs.id,c.rate,c.goal_type,i.badge_level FROM content_submissions cs JOIN campaigns c ON cs.campaign_id=c.id JOIN influencers i ON cs.influencer_id=i.id WHERE cs.id=? AND c.brand_id=?'
+        : 'SELECT cs.id,c.rate,c.goal_type,i.badge_level FROM content_submissions cs JOIN campaigns c ON cs.campaign_id=c.id JOIN influencers i ON cs.influencer_id=i.id WHERE cs.id=? AND cs.influencer_id=?';
     $stmt=$pdo->prepare($checkSql);
     $stmt->execute([$subId,$user]);
     $row=$stmt->fetch(PDO::FETCH_ASSOC);
@@ -134,9 +145,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'complete_profile') {
     $earn=0;
     if($metrics){
         if($row['goal_type']=='CPM'){
-            $earn=($metrics['impressions']/1000)*$row['rate'];
+            $rate = badge_rate($pdo, $row['badge_level'] ?? 'bronze');
+            $earn = ($metrics['impressions']/1000) * $rate;
         }else{
-            $earn=$metrics['engagement_total']*$row['rate'];
+            $earn = $metrics['engagement_total'] * $row['rate'];
         }
     }
     respond(true,['metrics'=>$metrics,'estimated_earnings'=>$earn]);

@@ -98,6 +98,12 @@ Users can now update their username, bio, category and payout details from the n
 
 To minimise calls to Instagram and improve performance, API requests now use a simple file based cache in the new `cache/` directory. Helper functions in `includes/instagram_api.php` provide profile, insights and top media data with a short TTL. Endpoints can request cached data via `/backend/influencer.php?action=top_media`.
 
+## Badge Rates
+
+Influencer payouts for CPM campaigns depend on their badge level. Default values
+are stored in the `badge_rates` table and can be updated through
+`/backend/admin.php?action=set_badge_rate`.
+
 ## Development
 
 To install PHP dependencies, run `composer install` inside this directory. Ensure a MySQL server is available and load `schema.sql` to create tables.

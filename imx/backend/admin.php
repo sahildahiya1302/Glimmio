@@ -43,6 +43,25 @@ if ($action === 'set_badge' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
+if ($action === 'list_badge_rates' && $_SERVER['REQUEST_METHOD'] === 'GET') {
+    $stmt = $pdo->query('SELECT * FROM badge_rates');
+    respond(true, $stmt->fetchAll(PDO::FETCH_ASSOC));
+}
+
+if ($action === 'set_badge_rate' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $badge = $_POST['badge'] ?? '';
+    $rate = floatval($_POST['rate'] ?? 0);
+    if (!in_array($badge, ['bronze','silver','gold','elite']) || $rate <= 0) {
+        respond(false, null, 'Invalid parameters');
+    }
+    $stmt = $pdo->prepare('INSERT INTO badge_rates (badge_level, cpm_rate) VALUES (?, ?) ON DUPLICATE KEY UPDATE cpm_rate=VALUES(cpm_rate)');
+    if ($stmt->execute([$badge, $rate])) {
+        respond(true, null, 'Rate updated');
+    } else {
+        respond(false, null, 'Update failed');
+    }
+}
+
 if ($action === 'list_campaigns' && $_SERVER['REQUEST_METHOD'] === 'GET') {
     $stmt = $pdo->query("SELECT c.id, c.title, c.status, c.budget_total, c.commission_percent, b.email AS brand_email FROM campaigns c JOIN brands b ON c.brand_id = b.id ORDER BY c.created_at DESC");
     respond(true, $stmt->fetchAll(PDO::FETCH_ASSOC));

@@ -11,7 +11,7 @@ The `imx (1)` folder contains the complete PHP web application for Glimmio. Belo
 - **uploads/** – Uploaded images and media.
 - **logs/** – Application logs.
 
-The root of this folder also holds `dashboard.php` (main entry after login), `profile.php` for viewing a user profile, `schema.sql` defining the database, and Composer files (`composer.json`, `composer.lock`).
+The root of this folder also holds `dashboard.php` (main entry after login), `pages/profile.php` for viewing a user profile, `schema.sql` defining the database, and Composer files (`composer.json`, `composer.lock`).
 
 ## File Listing
 
@@ -66,7 +66,7 @@ imx (1)/pages/influencer-dashboard.php
 imx (1)/pages/influencer-directory.php
 imx (1)/pages/login.html
 imx (1)/pages/onboarding.php
-imx (1)/profile.php
+imx (1)/pages/profile.php
 imx (1)/schema.sql
 imx (1)/sitemap.xml
 imx (1)/uploads/Lakhi.png

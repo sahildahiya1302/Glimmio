@@ -37,7 +37,7 @@ $role = $_SESSION['role'] ?? 'brand';
         e.preventDefault();
         const formData = new FormData(this);
         formData.append('role', '<?php echo $role; ?>');
-        const response = await fetch('../backend/profile.php?action=complete_profile', {
+        const response = await fetch('../backend/metrics.php?action=complete_profile', {
             method: 'POST',
             body: formData
         });

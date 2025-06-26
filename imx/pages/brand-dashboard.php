@@ -143,7 +143,7 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'brand') {
         // Load profile data from backend API
         async function loadProfile() {
             try {
-                const response = await fetch('/backend/profile.php');
+                const response = await fetch('/backend/metrics.php?action=me');
                 const result = await response.json();
                 if (result.success) {
                     const profile = result.data;

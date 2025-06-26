@@ -127,7 +127,7 @@ function renderPosts(filter = '') {
       ? `<div class="poll"><p>${p.poll_question}</p>${(p.poll_results || []).map((o, i) => `<button class="poll-option" data-id="${p.id}" data-opt="${i}">${o.option} (${o.votes})</button>`).join('')}</div>`
       : '';
 
-    const caption = `<div class="caption">${p.content.replace(/@(\w+)/g, '<a href="/profile.php?user=$1">@$1</a>')}</div>`;
+    const caption = `<div class="caption">${p.content.replace(/@(\w+)/g, '<a href="/pages/profile.php?user=$1">@$1</a>')}</div>`;
     const reactions = `
       <div class="reactions">
         <button class="like-btn" data-id="${p.id}">❤ ${p.like_count || 0}</button>

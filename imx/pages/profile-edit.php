@@ -44,7 +44,7 @@ document.getElementById('edit-form').addEventListener('submit', async e => {
     });
     const data = await res.json();
     alert(data.message);
-    if(data.success){ window.location.href = '../profile.php'; }
+    if(data.success){ window.location.href = 'profile.php'; }
 });
 </script>
 </body>

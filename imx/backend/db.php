@@ -1,6 +1,6 @@
 <?php
 function load_env() {
-    $envPath = __DIR__ . '/../.env';
+    $envPath = __DIR__ . '/../../.env';
     if (!file_exists($envPath)) {
         return;
     }

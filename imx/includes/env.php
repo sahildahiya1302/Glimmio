@@ -1,7 +1,7 @@
 <?php
 function env(string $key, $default = null) {
     if (!isset($_ENV[$key])) {
-        $envPath = __DIR__ . '/../.env';
+        $envPath = __DIR__ . '/../../.env';
         if (file_exists($envPath)) {
             $lines = file($envPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
             foreach ($lines as $line) {

@@ -87,7 +87,7 @@ secure_page_headers();
     <a href="#explore" class="tablink" data-title="Explore">🔍</a>
     <button id="add-post-btn-mobile" class="fab" data-title="Post">➕</button>
     <a href="#ads" class="tablink" data-title="Campaigns">📣</a>
-    <a href="profile.php" data-title="Profile">👤</a>
+    <a href="pages/profile.php" data-title="Profile">👤</a>
 </nav>
 <div class="dashboard-container">
     <div class="main-content" id="main-content">

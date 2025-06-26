@@ -1,8 +1,8 @@
 <?php
 require_once 'db.php';
 require_once __DIR__ . '/../includes/instagram_api.php';
-session_start();
-require_once __DIR__ . "/../includes/security.php";
+require_once __DIR__ . '/../includes/security.php';
+secure_session_start();
 
 function respond($success, $data = null, $message = '') {
     header('Content-Type: application/json');
@@ -29,9 +29,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && $action === 'profile' && $role === '
     try {
         // Fetch influencer profile
         $user_id = $_SESSION['user_id'];
-        $stmt = $pdo->prepare('SELECT id, email, username, profile_pic FROM influencers WHERE id = ?');
+        $stmt = $pdo->prepare('SELECT id, email, username, instagram_handle, profile_pic FROM influencers WHERE id = ?');
         $stmt->execute([$user_id]);
         $profile = $stmt->fetch();
+        if ($profile && empty($profile['username'])) {
+            $profile['username'] = $profile['instagram_handle'] ?: explode('@', $profile['email'])[0];
+        }
         if ($profile) {
             respond(true, $profile);
         } else {
@@ -139,6 +142,63 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && $action === 'profile' && $role === '
         }
     }
     respond(false, null, 'Unable to refresh profile');
+} elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && $action === 'top_media' && $role === 'influencer') {
+    $tokenStmt = $pdo->prepare('SELECT ig_user_id, access_token FROM instagram_tokens WHERE user_id = ?');
+    $tokenStmt->execute([$_SESSION['user_id']]);
+    $row = $tokenStmt->fetch(PDO::FETCH_ASSOC);
+    if ($row && $row['access_token']) {
+        $media = instagram_get_top_media($row['ig_user_id'], $row['access_token']);
+        if ($media) {
+            respond(true, $media);
+        }
+    }
+    respond(false, null, 'Unable to fetch top media');
+} elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'update_profile' && $role === 'influencer') {
+    require_csrf();
+    $user_id = $_SESSION['user_id'];
+    $username = sanitize_text('username');
+    $bio = sanitize_text('bio');
+    $category = sanitize_text('category');
+    $upi_id = sanitize_text('upi_id');
+    $pic_url = null;
+    if (isset($_FILES['profile_pic']) && validate_upload($_FILES['profile_pic'], ['image/jpeg','image/png'])) {
+        $dir = __DIR__ . '/../uploads/influencers/';
+        if (!is_dir($dir)) { mkdir($dir, 0755, true); }
+        $fname = uniqid() . '_' . basename($_FILES['profile_pic']['name']);
+        $target = $dir . $fname;
+        if (move_uploaded_file($_FILES['profile_pic']['tmp_name'], $target)) {
+            $pic_url = '/uploads/influencers/' . $fname;
+        } else {
+            respond(false, null, 'Failed to upload profile picture.');
+        }
+    } elseif (isset($_FILES['profile_pic'])) {
+        respond(false, null, 'Invalid profile picture.');
+    }
+
+    $stmt = $pdo->prepare('SELECT id FROM influencers WHERE id = ?');
+    $stmt->execute([$user_id]);
+    $exists = $stmt->fetch();
+
+    if ($exists) {
+        $sql = 'UPDATE influencers SET username=?, bio=?, category=?, upi_id=?';
+        $params = [$username, $bio, $category, $upi_id];
+        if ($pic_url) { $sql .= ', profile_pic=?'; $params[] = $pic_url; }
+        $sql .= ' WHERE id=?';
+        $params[] = $user_id;
+        $up = $pdo->prepare($sql);
+        if ($up->execute($params)) {
+            respond(true, null, 'Profile updated successfully.');
+        } else {
+            respond(false, null, 'Failed to update profile.');
+        }
+    } else {
+        $stmt = $pdo->prepare('INSERT INTO influencers (id, username, bio, category, upi_id, profile_pic) VALUES (?, ?, ?, ?, ?, ?)');
+        if ($stmt->execute([$user_id, $username, $bio, $category, $upi_id, $pic_url])) {
+            respond(true, null, 'Profile created successfully.');
+        } else {
+            respond(false, null, 'Failed to create profile.');
+        }
+    }
 } elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && $action === 'list_all' && $role === 'brand') {
     $category = $_GET['category'] ?? null;
     $sql = 'SELECT i.id, i.username, i.email, i.badge_level, i.category, i.followers_count, SUM(m.reach) as reach, SUM(m.engagement_total) as engagement FROM influencers i LEFT JOIN content_submissions cs ON cs.influencer_id = i.id LEFT JOIN metrics m ON m.submission_id = cs.id';

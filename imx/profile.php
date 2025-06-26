@@ -1,5 +1,8 @@
 <?php
-session_start();
+$include = __DIR__ . '/includes/security.php';
+require_once $include;
+secure_session_start();
+secure_page_headers();
 if(!isset($_SESSION['user_id'])){header('Location: login.html');exit;}
 $role=$_SESSION['role'];
 ?>
@@ -24,12 +27,16 @@ $role=$_SESSION['role'];
         <img id="profile-pic" src="" alt="" style="width:100px;height:100px;border-radius:50%;object-fit:cover;background:#ddd;" />
         <h2 id="username" style="margin:10px 0 5px;font-size:22px;"></h2>
         <p id="stats" style="color:#666;"></p>
+        <p><a href="pages/profile-edit.php">Edit Profile</a></p>
     </div>
     <div id="profile-grid" class="feed-grid"></div>
+    <h3>Top Instagram Posts</h3>
+    <div id="top-media-grid" class="feed-grid"></div>
 </div>
 <script>
 const role='<?php echo $role;?>';
 let posts=[];
+let topMedia=[];
 async function loadProfile(){
     const resp=await fetch('/backend/'+(role==='brand'?'brand':'influencer')+'.php?action=profile');
     const data=await resp.json();
@@ -39,6 +46,7 @@ async function loadProfile(){
         document.getElementById('profile-pic').src=p.profile_pic||p.logo_url||'';
         document.getElementById('stats').textContent=`Followers ${p.followers_count||0} • Posts ${p.media_count||0}`;
         loadPosts(p.id);
+        if(role==='influencer') loadTopMedia();
     }
 }
 async function loadPosts(uid){
@@ -71,6 +79,27 @@ function renderPosts(){
     });
 }
 document.addEventListener('DOMContentLoaded',loadProfile);
+
+async function loadTopMedia(){
+    const res = await fetch('/backend/influencer.php?action=top_media');
+    const data = await res.json();
+    if(data.success){
+        topMedia = data.data.data || [];
+    }
+    renderTopMedia();
+}
+
+function renderTopMedia(){
+    const grid = document.getElementById('top-media-grid');
+    if(!grid) return;
+    grid.innerHTML='';
+    topMedia.forEach(m=>{
+        const card=document.createElement('div');
+        card.className='feed-card';
+        card.innerHTML=`<div class="media"><img src="${m.media_url}"/></div>`;
+        grid.appendChild(card);
+    });
+}
 </script>
 </body>
 </html>

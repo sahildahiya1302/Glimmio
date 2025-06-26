@@ -1,0 +1,210 @@
+body {
+    margin: 0;
+    font-family: 'Inter', 'Poppins', 'DM Sans', sans-serif;
+    background: #fafafa;
+}
+
+.feed-view {
+    position: relative;
+    padding-top: 50px;
+    min-height: 100vh;
+}
+
+/* filter chips */
+.filter-bar {
+    position: sticky;
+    top: 0;
+    background: #fff;
+    border-bottom: 1px solid #ddd;
+    padding: 10px;
+    display: flex;
+    overflow-x: auto;
+    z-index: 10;
+}
+
+.filter-bar .chip {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 20px;
+    margin-right: 8px;
+    background: #eee;
+    cursor: pointer;
+    white-space: nowrap;
+    font-size: 14px;
+    transition: background 0.3s;
+}
+
+.filter-bar .chip.active {
+    background: linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);
+    color: #fff;
+}
+
+.feed-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+.feed-card {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.feed-card .header {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+}
+
+.feed-card .avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #ddd;
+}
+
+.feed-card .name {
+    font-weight: bold;
+    margin-left: 10px;
+}
+
+.feed-card .role-tag {
+    margin-left: auto;
+    font-size: 12px;
+    background: #eee;
+    padding: 2px 8px;
+    border-radius: 12px;
+}
+
+.feed-card .dropdown { margin-left: 6px; cursor: pointer; }
+
+.feed-card .media {
+    width: 100%;
+    max-height: 400px;
+    overflow: hidden;
+}
+
+.feed-card .media img,
+.feed-card .media video {
+    width: 100%;
+    display: block;
+}
+
+.feed-card .caption {
+    padding: 10px;
+    font-size: 14px;
+    line-height: 1.4;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.feed-card .caption.expanded {
+    -webkit-line-clamp: unset;
+}
+
+.feed-card .reactions {
+    display: flex;
+    gap: 15px;
+    padding: 10px;
+    border-top: 1px solid #eee;
+}
+
+.feed-card .reactions button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #333;
+}
+
+.feed-card .reactions button:hover {
+    color: #e1306c;
+}
+
+.analytics-tooltip {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(0,0,0,0.8);
+    color: #fff;
+    font-size: 12px;
+    padding: 4px 6px;
+    border-radius: 4px;
+    display: none;
+}
+
+.feed-card:hover .analytics-tooltip {
+    display: block;
+}
+
+.feed-card .cta {
+    padding: 10px;
+    border-top: 1px solid #eee;
+}
+
+.feed-card .cta button {
+    width: 100%;
+    background: linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);
+    border: none;
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.loading, .end-message { text-align: center; padding: 20px; color: #666; }
+
+.skeleton {
+    height: 300px;
+    background: #eee;
+    border-radius: 8px;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.8; }
+    50% { opacity: 0.4; }
+    100% { opacity: 0.8; }
+}
+
+@media (max-width: 768px) {
+    .feed-grid { grid-template-columns: 1fr; padding: 10px; }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    .feed-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+.comment-popup {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+.comment-popup .popup-content {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 400px;
+    max-height: 90%;
+    overflow-y: auto;
+}
+body.dark-mode .comment-popup .popup-content { background:#1d1d1d; color:#e0e0e0; }

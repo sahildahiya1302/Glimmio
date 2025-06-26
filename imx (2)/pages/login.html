@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; script-src 'self'; style-src 'self';" />
+  <title>Login</title>
+  <link rel="stylesheet" href="../css/login-style.css" />
+  <link rel="stylesheet" href="../css/instagram-theme.css" />
+  <link rel="stylesheet" href="../css/dark-theme.css" />
+</head>
+<body>
+  <button id="theme-toggle">🌙</button>
+
+  <!-- Login Form -->
+  <div id="auth-container" class="login-container">
+    <div id="login-form-container">
+      <h1>Login</h1>
+      <form id="email-login-form">
+        <input type="email" id="login-email" placeholder="Email" required />
+        <input type="password" id="login-password" placeholder="Password" required />
+        <input type="hidden" id="csrf_login" name="csrf_token" />
+        <button type="submit" class="submit">Login</button>
+      </form>
+      <p>Don't have an account? <button id="show-register" class="link-button">Register</button></p>
+    </div>
+  </div>
+
+  <!-- User Type Modal -->
+  <div id="user-type-modal" class="modal" style="display:none;">
+    <div class="modal-content center">
+      <span id="close-user-type" class="close">&times;</span>
+      <h2>Select User Type</h2>
+      <button id="select-brand">Brand</button>
+      <button id="select-influencer">Influencer</button>
+    </div>
+  </div>
+
+  <!-- Brand Registration Modal -->
+  <div id="brand-register-modal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <span id="close-brand-register" class="close">&times;</span>
+      <h2>Register as Brand</h2>
+      <form id="brand-register-form">
+        <input type="email" id="brand-register-email" placeholder="Email" required />
+        <input type="text" id="brand-register-company" placeholder="Company Name" required />
+        <input type="url" id="brand-register-website" placeholder="Website" required />
+        <input type="text" id="brand-register-industry" placeholder="Industry" required />
+        <input type="password" id="brand-register-password" placeholder="Password" required />
+        <input type="password" id="brand-register-password-confirm" placeholder="Confirm Password" required />
+        <input type="hidden" id="csrf_brand" name="csrf_token" />
+        <button type="submit" class="submit">Register</button>
+        <p>Already have an account? <button type="button" class="link-button show-login">Login</button></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Influencer Registration Modal -->
+  <div id="influencer-register-modal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <span id="close-influencer-register" class="close">&times;</span>
+      <h2>Register as Influencer</h2>
+      <form id="influencer-register-form">
+        <input type="email" id="influencer-register-email" placeholder="Email" required />
+        <input type="text" id="influencer-register-handle" placeholder="Instagram Handle" required />
+        <input type="text" id="influencer-register-category" placeholder="Category" required />
+        <input type="password" id="influencer-register-password" placeholder="Password" required />
+        <input type="password" id="influencer-register-password-confirm" placeholder="Confirm Password" required />
+        <input type="hidden" id="csrf_influencer" name="csrf_token" />
+        <button type="submit" class="submit">Register</button>
+        <p>Already have an account? <button type="button" class="link-button show-login">Login</button></p>
+      </form>
+    </div>
+  </div>
+  <input type="hidden" id="csrf_generic" name="csrf_token" />
+
+
+  <!-- Scripts -->
+  <script src="../js/login.js"></script>
+  <script src="../js/pixel.js"></script>
+</body>
+</html>

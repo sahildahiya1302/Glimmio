@@ -1,0 +1,13 @@
+2025-06-21T09:55:32+00:00 sent
+2025-06-21T10:23:12+00:00 failed: SMTP Error: Could not authenticate.
+2025-06-21T10:24:44+00:00 sent (PHPMailer)
+2025-06-21T10:28:46+00:00 failed: SMTP Error: Could not authenticate.
+2025-06-21T10:30:07+00:00 failed: SMTP Error: Could not authenticate.
+2025-06-21T10:31:09+00:00 sent (PHPMailer)
+2025-06-21T10:32:33+00:00 sent (PHPMailer)
+2025-06-21T10:38:14+00:00 sent (PHPMailer)
+2025-06-22T03:48:29+00:00 sent (PHPMailer)
+2025-06-26T09:16:47+00:00 sent to sahildahiya102@gmail.com
+2025-06-26T09:17:01+00:00 sent to sahildahiya1302@gmail.com
+2025-06-26T10:16:27+00:00 sent to sahildahiya802@gmail.com
+2025-06-26T10:17:17+00:00 sent to bevydigitalagency@gmail.com

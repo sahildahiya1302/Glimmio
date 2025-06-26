@@ -74,3 +74,74 @@ input:focus {
         padding: 8px 16px;
     }
 }
+/* Button style used as text link */
+.link-button {
+    background: none;
+    border: none;
+    color: #D0007D;
+    cursor: pointer;
+    padding: 0;
+    font-size: 1em;
+}
+
+/* Modal overlay */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 10% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 300px;
+    border-radius: 8px;
+    position: relative;
+}
+
+.modal-content.center {
+    text-align: center;
+}
+
+.close {
+    color: #aaa;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.modal-content input,
+.modal-content select {
+    width: 100%;
+    margin: 8px 0;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+.modal-content button.submit {
+    width: 100%;
+    padding: 10px;
+    background-color: #D0007D;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 4px;
+}
+
+#theme-toggle {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}

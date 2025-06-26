@@ -12,6 +12,7 @@
     }
     const query = params();
     // persist attribution parameters
+    const q = query.toString();
     const keys = ['campaign_id','submission_id','influencer_id'];
     keys.forEach(k=>{
         const v = query.get(k);
@@ -28,7 +29,7 @@
             submission_id: stored('submission_id'),
             influencer_id: stored('influencer_id')
         }, extra||{});
-        fetch('/backend/pixel.php?' + query.toString(), {
+        fetch('/backend/pixel.php' + (q ? '?' + q : ''), {
             method: 'POST',
             headers: {'Content-Type':'application/json'},
             body: JSON.stringify(payload)
